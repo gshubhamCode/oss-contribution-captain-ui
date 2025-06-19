@@ -37,7 +37,7 @@ export default function App() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch("http://localhost:8080/issues/summaries");
+        const response = await fetch( `${import.meta.env.VITE_BACKEND_URL}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setIssues(data.summaries);
@@ -165,7 +165,7 @@ export default function App() {
           setSelectedIndex={setSelectedIndex}
           pageSize={pageSize}
         />
-        
+
         {/* Issue Details */}
         <Box
           flex="1"
