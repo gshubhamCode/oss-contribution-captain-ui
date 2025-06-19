@@ -21,21 +21,43 @@ const labelOptions = [
 
 // react-select styles
 const customStyles = (colorMode: "light" | "dark") => ({
-  control: (base: any) => ({
+  control: (base: any, state: any) => ({
     ...base,
     backgroundColor: colorMode === "light" ? "white" : "#2D3748",
-    borderColor: colorMode === "light" ? "#CBD5E0" : "#4A5568",
+    borderColor: state.isFocused
+      ? colorMode === "light" ? "#3182ce" : "#63b3ed"
+      : colorMode === "light" ? "#CBD5E0" : "#4A5568",
+    boxShadow: state.isFocused
+      ? colorMode === "light" ? "0 0 0 1px #3182ce" : "0 0 0 1px #63b3ed"
+      : "none",
     minHeight: "36px",
     fontSize: "0.875rem",
     width: "260px",
+    color: colorMode === "light" ? "black" : "white",
   }),
   menu: (base: any) => ({
     ...base,
+    backgroundColor: colorMode === "light" ? "white" : "#2D3748",
+    color: colorMode === "light" ? "black" : "white",
     zIndex: 9999,
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isFocused
+      ? (colorMode === "light" ? "#3182ce" : "#63b3ed")
+      : colorMode === "light" ? "white" : "#2D3748",
+    color: state.isFocused
+      ? "white"
+      : colorMode === "light" ? "black" : "white",
+    cursor: "pointer",
   }),
   input: (base: any) => ({
     ...base,
     color: colorMode === "light" ? "black" : "white",
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    backgroundColor: colorMode === "light" ? "#E2E8F0" : "#4A5568",
   }),
   multiValueLabel: (base: any) => ({
     ...base,
@@ -50,6 +72,7 @@ const customStyles = (colorMode: "light" | "dark") => ({
     color: colorMode === "light" ? "#A0AEC0" : "#CBD5E0",
   }),
 });
+
 
 type Props = {
   sidebarOpen: boolean;
@@ -73,7 +96,7 @@ const Sidebar: React.FC<Props> = ({
       as="nav"
       position="relative"
       top="64px"
-      h="calc(100vh - 64px)"
+      h="calc(100vh - 160px)"
       w={sidebarOpen ? ["80vw", "300px"] : "0"}
       transition="width 0.3s ease"
       overflow="hidden"
@@ -82,7 +105,7 @@ const Sidebar: React.FC<Props> = ({
     >
       {sidebarOpen && (
         <>
-          <Heading as="h3" size="md" mb={4}>
+          {/* <Heading as="h3" size="md" mb={4}>
             Language
           </Heading>
           <Select
@@ -94,7 +117,7 @@ const Sidebar: React.FC<Props> = ({
             onChange={(selected) => setLanguageFilters(selected.map((s) => s.value))}
             styles={customStyles(colorMode)}
             placeholder="Select languages..."
-          />
+          /> */}
 
           <Heading as="h3" size="md" mt={6} mb={4}>
             Framework / Label
