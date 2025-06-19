@@ -22,18 +22,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <Box
       as="nav"
-      position="relative"
-      top="64px"
-      height="calc(100vh - 64px)"
-      w={sidebarOpen ? ["80vw", "300px"] : "0"}
-      maxW={sidebarOpen ? "300px" : "0"}
-      transition="width 0.3s ease"
-      overflow="hidden"
-      bg={bgColor}
-      zIndex={100}
-    >
+  position="relative"
+  top="64px"
+  left="0"
+  h="calc(100vh - 130px)" 
+  w={sidebarOpen ? ["80vw", "300px"] : "0"}
+  maxW={sidebarOpen ? "300px" : "0"}
+  transition="width 0.3s ease"
+  overflowY="auto"        
+  bg={bgColor}
+  zIndex={20}
+>
       {sidebarOpen && (
-        <Box p={6}>
+        <Box >
           <Heading as="h3" size="md" mb={4}>
             Filter by Language
           </Heading>

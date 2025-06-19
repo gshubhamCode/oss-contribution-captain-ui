@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Flex,
-  Heading,
-  Input,
   Spinner,
-  useColorMode,
   useColorModeValue,
   IconButton,
 } from "@chakra-ui/react";
@@ -13,18 +10,16 @@ import {
   ArrowBackIcon,
   ArrowForwardIcon,
   ArrowUpIcon,
-  MoonIcon,
-  SunIcon,
 } from "@chakra-ui/icons";
 import Sidebar from "./components/Sidebar";
 import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
-import Pagination from "./components/Pagination";
 import Header from "./components/Header"; // add this import
+import Footer from "./components/Footer";
+
 
 
 export default function App() {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [labelFilters, setLabelFilters] = useState<string[]>([]);
@@ -58,7 +53,6 @@ export default function App() {
 
   const issueMatches = (issue: any) => {
     const issueDTO = issue.issueDTO;
-    const summaryText = issue.summary?.toLowerCase() || "";
     const title = issueDTO.title.toLowerCase();
     const issueId = String(issueDTO.id);
     const labels = issueDTO.labels?.map((l: string) => l.toLowerCase()) || [];
@@ -119,8 +113,12 @@ export default function App() {
     );
 
   return (
-    <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")}>
-      {/* Header */}
+    <Box minH="100vh" 
+    bg={bgColor} 
+    color={useColorModeValue("gray.800", "white")} 
+    display="flex"
+    flexDirection="column">
+
       <Header
         searchInput={searchInput}
         setSearchInput={setSearchInput}
@@ -128,8 +126,9 @@ export default function App() {
       />
 
       {/* Main Layout */}
-      <Flex pt={16} px={4} minH="calc(100vh - 64px)">
-        {/* Sidebar */}
+      <Box flex="1">
+        <Flex pt={16} px={4} minH="calc(100vh - 64px)">
+
         <Sidebar
           sidebarOpen={sidebarOpen}
           languageFilters={languageFilters}
@@ -189,7 +188,10 @@ export default function App() {
             }
           />
         </Box>
-      </Flex>
+        </Flex>
+      </Box>
+
+      <Footer />
 
       {/* Scroll to top */}
       <IconButton
