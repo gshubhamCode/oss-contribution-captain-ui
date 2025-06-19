@@ -19,7 +19,7 @@ const labelOptions = [
   { value: "bug", label: "Bug" },
 ];
 
-// react-select styles to match Chakra UI color modes and design
+// react-select styles
 const customStyles = (colorMode: "light" | "dark") => ({
   control: (base: any) => ({
     ...base,
@@ -27,7 +27,7 @@ const customStyles = (colorMode: "light" | "dark") => ({
     borderColor: colorMode === "light" ? "#CBD5E0" : "#4A5568",
     minHeight: "36px",
     fontSize: "0.875rem",
-    width: "260px", // fixed width
+    width: "260px",
   }),
   menu: (base: any) => ({
     ...base,
@@ -52,6 +52,7 @@ const customStyles = (colorMode: "light" | "dark") => ({
 });
 
 type Props = {
+  sidebarOpen: boolean;
   languageFilters: string[];
   labelFilters: string[];
   setLanguageFilters: (filters: string[]) => void;
@@ -59,6 +60,7 @@ type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({
+  sidebarOpen,
   languageFilters,
   labelFilters,
   setLanguageFilters,
@@ -72,34 +74,43 @@ const Sidebar: React.FC<Props> = ({
       position="relative"
       top="64px"
       h="calc(100vh - 64px)"
-      w="300px"
-      overflowY="auto"
-      p={6}
+      w={sidebarOpen ? ["80vw", "300px"] : "0"}
+      transition="width 0.3s ease"
+      overflow="hidden"
+      p={sidebarOpen ? 6 : 0}
       bg={useColorModeValue("gray.50", "gray.800")}
     >
-      <Heading as="h3" size="md" mb={4}>
-        Language
-      </Heading>
-      <Select
-        options={languageOptions}
-        isMulti
-        value={languageOptions.filter((opt) => languageFilters.includes(opt.value))}
-        onChange={(selected) => setLanguageFilters(selected.map((s) => s.value))}
-        styles={customStyles(colorMode)}
-        placeholder="Select languages..."
-      />
+      {sidebarOpen && (
+        <>
+          <Heading as="h3" size="md" mb={4}>
+            Language
+          </Heading>
+          <Select
+            options={languageOptions}
+            isMulti
+            value={languageOptions.filter((opt) =>
+              languageFilters.includes(opt.value)
+            )}
+            onChange={(selected) => setLanguageFilters(selected.map((s) => s.value))}
+            styles={customStyles(colorMode)}
+            placeholder="Select languages..."
+          />
 
-      <Heading as="h3" size="md" mt={6} mb={4}>
-        Framework / Label
-      </Heading>
-      <Select
-        options={labelOptions}
-        isMulti
-        value={labelOptions.filter((opt) => labelFilters.includes(opt.value))}
-        onChange={(selected) => setLabelFilters(selected.map((s) => s.value))}
-        styles={customStyles(colorMode)}
-        placeholder="Select labels..."
-      />
+          <Heading as="h3" size="md" mt={6} mb={4}>
+            Framework / Label
+          </Heading>
+          <Select
+            options={labelOptions}
+            isMulti
+            value={labelOptions.filter((opt) =>
+              labelFilters.includes(opt.value)
+            )}
+            onChange={(selected) => setLabelFilters(selected.map((s) => s.value))}
+            styles={customStyles(colorMode)}
+            placeholder="Select labels..."
+          />
+        </>
+      )}
     </Box>
   );
 };

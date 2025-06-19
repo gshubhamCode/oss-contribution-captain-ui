@@ -165,7 +165,7 @@ export default function App() {
           setSelectedIndex={setSelectedIndex}
           pageSize={pageSize}
         />
-
+        
         {/* Issue Details */}
         <Box
           flex="1"

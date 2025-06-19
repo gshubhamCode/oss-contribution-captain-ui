@@ -31,17 +31,17 @@ const IssueList: React.FC<IssueListProps> = ({
 }) => {
   return (
     <Box
-      flexShrink={0}
-      w={["90vw", "350px"]}
+      maxW="100%"
+      w={["100%", "350px"]}
       p={6}
       ml={[0, 4]}
-      maxW="100%"
       maxH="calc(100vh - 96px)"
       overflowY="auto"
       borderWidth="1px"
       borderRadius="md"
       boxShadow="md"
       bg={useColorModeValue("white", "gray.800")}
+      flexShrink={0}
     >
       <Heading as="h3" size="md" mb={4}>
         Git Issues
