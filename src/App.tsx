@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -14,19 +14,89 @@ import {
   useColorMode,
   useColorModeValue,
   IconButton,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   ArrowBackIcon,
   ArrowForwardIcon,
   ArrowUpIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from '@chakra-ui/icons';
+  SunIcon,
+  MoonIcon,
+} from "@chakra-ui/icons";
+
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  const [inputValue, setInputValue] = useState(currentPage.toString());
+
+  useEffect(() => {
+    setInputValue(currentPage.toString());
+  }, [currentPage]);
+
+  const onInputChange = (e) => {
+    const val = e.target.value;
+    if (/^\d*$/.test(val)) {
+      setInputValue(val);
+    }
+  };
+
+  const onInputBlur = () => {
+    let pageNum = Number(inputValue);
+    if (pageNum < 1) pageNum = 1;
+    else if (pageNum > totalPages) pageNum = totalPages;
+    onPageChange(pageNum);
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.target.blur();
+    }
+  };
+
+  return (
+    <Flex justifyContent="center" alignItems="center" mt={4} gap={3} fontSize="sm">
+      <Button
+        onClick={() => onPageChange(currentPage - 1)}
+        isDisabled={currentPage === 1}
+        leftIcon={<ArrowBackIcon />}
+        colorScheme="gray"
+        variant="outline"
+        size="sm"
+      >
+        Prev
+      </Button>
+
+      <Text>
+        Page{" "}
+        <Input
+          value={inputValue}
+          onChange={onInputChange}
+          onBlur={onInputBlur}
+          onKeyDown={onKeyDown}
+          maxW="50px"
+          size="sm"
+          textAlign="center"
+          display="inline-block"
+          verticalAlign="middle"
+          mx={1}
+        />{" "}
+        / {totalPages}
+      </Text>
+
+      <Button
+        onClick={() => onPageChange(currentPage + 1)}
+        isDisabled={currentPage === totalPages}
+        rightIcon={<ArrowForwardIcon />}
+        colorScheme="gray"
+        variant="outline"
+        size="sm"
+      >
+        Next
+      </Button>
+    </Flex>
+  );
+}
 
 export default function App() {
   const { colorMode, toggleColorMode } = useColorMode();
-
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState([]);
   const [labelFilters, setLabelFilters] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -34,29 +104,22 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 15;
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialSearch = urlParams.get('search') || '';
-    setSearchInput(initialSearch);
-  }, []);
+  const pageSize = 15;
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:8080/issues/summaries');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch("http://localhost:8080/issues/summaries");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setIssues(data.summaries);
-      } catch (error) {
-        setError('Failed to fetch issues. Please check the server or try again later.');
-        console.error('Error fetching issues:', error);
+      } catch (err) {
+        setError("Failed to fetch issues. Please check the server or try again later.");
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -66,7 +129,7 @@ export default function App() {
 
   const issueMatches = (issue) => {
     const issueDTO = issue.issueDTO;
-    const summaryText = issue.summary?.toLowerCase() || '';
+    const summaryText = issue.summary?.toLowerCase() || "";
     const title = issueDTO.title.toLowerCase();
     const issueId = String(issueDTO.id);
     const labels = issueDTO.labels?.map((l) => l.toLowerCase()) || [];
@@ -92,30 +155,24 @@ export default function App() {
   const paginatedIssues = filteredIssues.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const url = new URL(window.location.href);
-      url.searchParams.set('search', e.currentTarget.value);
-      window.history.pushState(null, '', url);
+      url.searchParams.set("search", e.currentTarget.value);
+      window.history.pushState(null, "", url);
       setSearchInput(e.currentTarget.value);
       setCurrentPage(1);
     }
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      setSelectedIndex((page - 1) * pageSize); // optionally reset selection on page change
-      scrollToTop();
-    }
+    if (page < 1) page = 1;
+    else if (page > totalPages) page = totalPages;
+    setCurrentPage(page);
+    setSelectedIndex((page - 1) * pageSize);
+    scrollToTop();
   };
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
-  const sidebarBg = useColorModeValue('white', 'gray.800');
 
   if (loading)
     return (
@@ -130,13 +187,15 @@ export default function App() {
       </Box>
     );
 
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')} color={useColorModeValue('gray.800', 'white')}>
-      {/* Fixed Header */}
+    <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")}>
+      {/* Header */}
       <Flex
         as="header"
         w="100%"
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue("white", "gray.800")}
         p={4}
         boxShadow="md"
         position="fixed"
@@ -145,7 +204,7 @@ export default function App() {
         alignItems="center"
       >
         <Heading as="h4" size="lg">
-          🚀 Open Source Contribution Helper
+           Open Source Contribution Helper
         </Heading>
         <Flex flex={1} justifyContent="center" mx={4}>
           <Input
@@ -155,14 +214,14 @@ export default function App() {
             onChange={(e) => setSearchInput(e.target.value)}
             size="md"
             maxW="md"
-            bg={useColorModeValue('white', 'gray.700')}
-            borderColor={useColorModeValue('gray.300', 'gray.600')}
-            _focus={{ borderColor: 'blue.500', boxShadow: 'outline' }}
+            bg={useColorModeValue("white", "gray.700")}
+            borderColor={useColorModeValue("gray.300", "gray.600")}
+            _focus={{ borderColor: "blue.500", boxShadow: "outline" }}
           />
         </Flex>
         <IconButton
           aria-label="Toggle color mode"
-          icon={colorMode === 'light' ? <ArrowUpIcon /> : <ArrowUpIcon />}
+          icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
           onClick={toggleColorMode}
           variant="outline"
           size="sm"
@@ -170,31 +229,22 @@ export default function App() {
         />
       </Flex>
 
-      <Flex pt={16} px={4}>
-        {/* Sidebar sliding box */}
+      {/* Content */}
+      <Flex pt={16} px={4} minH="calc(100vh - 64px)">
+        {/* Sidebar */}
         <Box
-          position="relative"
-          w={sidebarOpen ? '300px' : '40px'}
-          bg={sidebarBg}
-          boxShadow="lg"
-          borderRightRadius="md"
-          transition="width 0.3s ease"
-          overflow="hidden"
-        >
-          <IconButton
-            aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-            icon={sidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            onClick={toggleSidebar}
-            position="absolute"
-            top="10px"
-            right={sidebarOpen ? '-20px' : '-20px'}
-            zIndex={10}
-            size="sm"
-            borderRadius="full"
-            boxShadow="md"
-            bg={sidebarBg}
-          />
-
+  as="nav"
+  position="relative"          // changed from relative to fixed
+  top="64px"                // push down below fixed header (header height ~64px)
+  left="0"
+  height="calc(100vh - 64px)" // full viewport height minus header
+  w={sidebarOpen ? ["80vw", "300px"] : "0"}
+  maxW={sidebarOpen ? "300px" : "0"}
+  transition="width 0.3s ease"
+  overflow="hidden"
+  bg={bgColor}
+  zIndex={100}
+>
           {sidebarOpen && (
             <Box p={6}>
               <Heading as="h3" size="md" mb={4}>
@@ -203,13 +253,14 @@ export default function App() {
               <Select
                 multiple
                 value={languageFilters}
-                onChange={(e) => setLanguageFilters(Array.from(e.target.selectedOptions, (option) => option.value))}
+                onChange={(e) => setLanguageFilters(Array.from(e.target.selectedOptions, (o) => o.value))}
                 mb={6}
-                bg={useColorModeValue('white', 'gray.700')}
-                borderColor={useColorModeValue('gray.300', 'gray.600')}
-                _focus={{ borderColor: 'blue.500', boxShadow: 'outline' }}
+                bg={useColorModeValue("white", "gray.700")}
+                borderColor={useColorModeValue("gray.300", "gray.600")}
+                _focus={{ borderColor: "blue.500", boxShadow: "outline" }}
+                size="sm"
               >
-                {['Java', 'Python', 'JavaScript', 'TypeScript', 'Go'].map((lang) => (
+                {["Java", "Python", "JavaScript", "TypeScript", "Go"].map((lang) => (
                   <option key={lang} value={lang}>
                     {lang}
                   </option>
@@ -222,12 +273,13 @@ export default function App() {
               <Select
                 multiple
                 value={labelFilters}
-                onChange={(e) => setLabelFilters(Array.from(e.target.selectedOptions, (option) => option.value))}
-                bg={useColorModeValue('white', 'gray.700')}
-                borderColor={useColorModeValue('gray.300', 'gray.600')}
-                _focus={{ borderColor: 'blue.500', boxShadow: 'outline' }}
+                onChange={(e) => setLabelFilters(Array.from(e.target.selectedOptions, (o) => o.value))}
+                bg={useColorModeValue("white", "gray.700")}
+                borderColor={useColorModeValue("gray.300", "gray.600")}
+                _focus={{ borderColor: "blue.500", boxShadow: "outline" }}
+                size="sm"
               >
-                {['springboot', 'react', 'angular', 'good first issue', 'feature', 'bug'].map((label) => (
+                {["springboot", "react", "angular", "good first issue", "feature", "bug"].map((label) => (
                   <option key={label} value={label}>
                     {label}
                   </option>
@@ -237,21 +289,40 @@ export default function App() {
           )}
         </Box>
 
-        {/* Middle Column: Issues */}
-        <Box
-          flex="1"
-          p={6}
-          ml={sidebarOpen ? 4 : 0}
-          transition="margin-left 0.3s ease"
-          maxWidth="400px"
-          overflowY="auto"
-          maxHeight="70vh"
-          bg={useColorModeValue('white', 'gray.800')}
+        {/* Sidebar Toggle Button */}
+        <IconButton
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          position="fixed"
+          top="80px"
+          left={sidebarOpen ? ["80vw", "300px"] : "0"}
+          transform="translateX(-50%)"
+          size="sm"
+          borderRadius="full"
+          bg={useColorModeValue("gray.200", "gray.700")}
+          color={useColorModeValue("gray.800", "white")}
           boxShadow="md"
+          _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
+          zIndex={1100}
+        />
+
+        {/* Issues list */}
+        <Box
+          flexShrink={0}
+          w={["90vw", "350px"]} // increased width ~10%
+          p={6}
+          ml={[0, 4]}
+          maxW="100%"
+          maxH="calc(100vh - 96px)"
+          overflowY="auto"
+          borderWidth="1px"
           borderRadius="md"
+          boxShadow="md"
+          bg={useColorModeValue("white", "gray.800")}
         >
           <Heading as="h3" size="md" mb={4}>
-            📋 Issues
+            Git Issues
           </Heading>
           <Stack spacing={0}>
             {paginatedIssues.map((issue, idx) => {
@@ -262,17 +333,17 @@ export default function App() {
                   p={3}
                   borderBottomWidth="1px"
                   cursor="pointer"
-                  bg={isSelected ? useColorModeValue('blue.50', 'blue.900') : 'transparent'}
-                  borderLeftWidth={isSelected ? '4px' : '0'}
-                  borderLeftColor={isSelected ? 'blue.500' : 'transparent'}
-                  _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
+                  bg={isSelected ? useColorModeValue("blue.50", "blue.900") : "transparent"}
+                  borderLeftWidth={isSelected ? "4px" : "0"}
+                  borderLeftColor={isSelected ? "blue.500" : "transparent"}
+                  _hover={{ bg: useColorModeValue("gray.100", "gray.700") }}
                   onClick={() => setSelectedIndex((currentPage - 1) * pageSize + idx)}
                 >
                   <Flex alignItems="center">
-                    <Text fontWeight="medium" color={useColorModeValue('gray.800', 'gray.200')}>
+                    <Text fontWeight="medium" color={useColorModeValue("gray.800", "gray.200")}>
                       {issue.issueDTO.title} (#{issue.issueDTO.id})
                     </Text>
-                    <Text ml="auto" color={useColorModeValue('gray.500', 'gray.400')} fontSize="sm">
+                    <Text ml="auto" color={useColorModeValue("gray.500", "gray.400")} fontSize="sm">
                       1:44 AM
                     </Text>
                   </Flex>
@@ -280,65 +351,26 @@ export default function App() {
               );
             })}
             {paginatedIssues.length === 0 && (
-              <Text p={4} textAlign="center" color={useColorModeValue('gray.500', 'gray.400')}>
+              <Text p={4} textAlign="center" color={useColorModeValue("gray.500", "gray.400")}>
                 No issues match the filters.
               </Text>
             )}
           </Stack>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Flex justifyContent="center" mt={4} gap={2} alignItems="center">
-              <Button
-                onClick={() => handlePageChange(currentPage - 1)}
-                isDisabled={currentPage === 1}
-                leftIcon={<ArrowBackIcon />}
-                colorScheme="gray"
-                variant="outline"
-              >
-                Previous
-              </Button>
-
-              <Text>
-                Page{' '}
-                <Input
-                  type="number"
-                  value={currentPage}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
-                    if (!isNaN(val)) handlePageChange(val);
-                  }}
-                  width="60px"
-                  display="inline-block"
-                  mx={2}
-                  size="sm"
-                />{' '}
-                of {totalPages}
-              </Text>
-
-              <Button
-                onClick={() => handlePageChange(currentPage + 1)}
-                isDisabled={currentPage === totalPages}
-                rightIcon={<ArrowForwardIcon />}
-                colorScheme="gray"
-                variant="outline"
-              >
-                Next
-              </Button>
-            </Flex>
-          )}
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
         </Box>
 
-        {/* Right Column: Issue Details */}
+        {/* Details */}
         <Box
-          flex="2"
+          flex="1"
           p={6}
-          ml={4}
-          maxHeight="70vh"
+          ml={[0, 4]}
+          maxWidth="100%"
+          maxH="calc(100vh - 96px)"
           overflowY="auto"
-          bg={useColorModeValue('white', 'gray.800')}
-          boxShadow="md"
+          bg={useColorModeValue("white", "gray.800")}
           borderRadius="md"
+          boxShadow="md"
         >
           {paginatedIssues.length > 0 &&
           selectedIndex >= (currentPage - 1) * pageSize &&
@@ -364,13 +396,19 @@ export default function App() {
                   </Link>
                 </Box>
               </Flex>
+
               <Heading as="h2" size="xl" mb={2}>
                 {paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].issueDTO.title}
               </Heading>
+
               <Text mb={2}>
-                <Text as="span" fontWeight="bold" color={useColorModeValue('gray.700', 'gray.300')}>
+                <Text
+                  as="span"
+                  fontWeight="bold"
+                  color={useColorModeValue("gray.700", "gray.300")}
+                >
                   Repository:
-                </Text>{' '}
+                </Text>{" "}
                 <Link
                   href={paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].issueDTO.url}
                   isExternal
@@ -379,14 +417,20 @@ export default function App() {
                   {paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].issueDTO.repositoryName}
                 </Link>
               </Text>
+
               <Text mb={2}>
-                <Text as="span" fontWeight="bold" color={useColorModeValue('gray.700', 'gray.300')}>
+                <Text
+                  as="span"
+                  fontWeight="bold"
+                  color={useColorModeValue("gray.700", "gray.300")}
+                >
                   Labels:
-                </Text>{' '}
-                {paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].issueDTO.labels?.join(', ') || 'None'}
+                </Text>{" "}
+                {paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].issueDTO.labels?.join(", ") || "None"}
               </Text>
+
               <Heading as="h3" size="md" mt={4} display="flex" alignItems="center">
-                Summary{' '}
+                Summary{" "}
                 <Text
                   as="span"
                   bg="green.500"
@@ -401,19 +445,19 @@ export default function App() {
                   🤖 AI Generated
                 </Text>
               </Heading>
-              <Text mt={2} color={useColorModeValue('gray.700', 'gray.300')}>
+              <Text mt={2} color={useColorModeValue("gray.700", "gray.300")}>
                 {paginatedIssues[selectedIndex - (currentPage - 1) * pageSize].summary}
               </Text>
             </Box>
           ) : (
-            <Text textAlign="center" color={useColorModeValue('gray.500', 'gray.400')}>
+            <Text textAlign="center" color={useColorModeValue("gray.500", "gray.400")}>
               No issue selected or no issues match the filters.
             </Text>
           )}
         </Box>
       </Flex>
 
-      {/* Back to Top Button */}
+      {/* Back to Top */}
       <IconButton
         aria-label="Back to top"
         icon={<ArrowUpIcon />}
@@ -422,7 +466,7 @@ export default function App() {
         right={8}
         colorScheme="gray"
         onClick={scrollToTop}
-        _hover={{ bg: 'gray.600' }}
+        _hover={{ bg: "gray.600" }}
       />
     </Box>
   );
