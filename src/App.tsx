@@ -5,7 +5,10 @@ import {
   Spinner,
   useColorModeValue,
   IconButton,
+  Button,
+  Text,
 } from "@chakra-ui/react";
+
 import {
   ArrowBackIcon,
   ArrowForwardIcon,
@@ -14,10 +17,8 @@ import {
 import Sidebar from "./components/Sidebar";
 import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
-import Header from "./components/Header"; // add this import
+import Header from "./components/Header";
 import Footer from "./components/Footer";
-
-
 
 export default function App() {
   const [searchInput, setSearchInput] = useState("");
@@ -32,22 +33,24 @@ export default function App() {
 
   const pageSize = 15;
 
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log(`${import.meta.env.VITE_BACKEND_URL}`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setIssues(data.summaries);
+    } catch (err) {
+      setError("Uh oh, something went wrong while fetching the issues.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch( `${import.meta.env.VITE_BACKEND_URL}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        setIssues(data.summaries);
-      } catch (err) {
-        setError("Failed to fetch issues. Please check the server or try again later.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -100,25 +103,60 @@ export default function App() {
 
   if (loading)
     return (
-      <Box textAlign="center" p={4}>
-        <Spinner size="lg" />
+      <Box textAlign="center" p={8} bg={useColorModeValue("gray.50", "gray.900")} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+        <Spinner size="xl" thickness="4px" speed="0.65s" color={useColorModeValue("teal.500", "teal.300")} />
+        <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+          Loading issues...
+        </Text>
       </Box>
     );
-
+  
   if (error)
     return (
-      <Box textAlign="center" p={4} color="red.500">
-        {error}
+      <Box
+        textAlign="center"
+        p={8}
+        maxW="400px"
+        mx="auto"
+        mt={20}
+        bg={useColorModeValue("red.50", "red.900")}
+        borderRadius="md"
+        boxShadow={useColorModeValue(
+          "0 0 10px rgba(220, 38, 38, 0.3)",
+          "0 0 10px rgba(245, 101, 101, 0.6)"
+        )}
+      >
+        <Text
+          fontSize="xl"
+          fontWeight="bold"
+          color={useColorModeValue("red.600", "red.300")}
+        >
+          {error}
+        </Text>
+        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
+          Please check your network connection or try again later.
+        </Text>
+        <Button
+          mt={6}
+          colorScheme="red"
+          onClick={() => {
+            fetchData();
+          }}
+        >
+          Retry
+        </Button>
       </Box>
     );
+  
 
   return (
-    <Box minH="100vh" 
-    bg={bgColor} 
-    color={useColorModeValue("gray.800", "white")} 
-    display="flex"
-    flexDirection="column">
-
+    <Box
+      minH="100vh"
+      bg={bgColor}
+      color={useColorModeValue("gray.800", "white")}
+      display="flex"
+      flexDirection="column"
+    >
       <Header
         searchInput={searchInput}
         setSearchInput={setSearchInput}
@@ -128,66 +166,65 @@ export default function App() {
       {/* Main Layout */}
       <Box flex="1">
         <Flex pt={16} px={4} minH="calc(100vh - 64px)">
-
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          languageFilters={languageFilters}
-          labelFilters={labelFilters}
-          setLanguageFilters={setLanguageFilters}
-          setLabelFilters={setLabelFilters}
-        />
-
-        {/* Sidebar Toggle */}
-        <IconButton
-          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-          icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          position="fixed"
-          top="80px"
-          left={sidebarOpen ? ["80vw", "300px"] : "0"}
-          transform="translateX(-50%)"
-          size="sm"
-          borderRadius="full"
-          bg={useColorModeValue("gray.200", "gray.700")}
-          color={useColorModeValue("gray.800", "white")}
-          boxShadow="md"
-          _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
-          zIndex={1100}
-        />
-
-        {/* Issue List */}
-        <IssueList
-          issues={paginatedIssues}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
-          pageSize={pageSize}
-        />
-
-        {/* Issue Details */}
-        <Box
-          flex="1"
-          p={6}
-          ml={[0, 4]}
-          maxWidth="100%"
-          maxH="calc(100vh - 96px)"
-          overflowY="auto"
-          bg={useColorModeValue("white", "gray.800")}
-          borderRadius="md"
-          boxShadow="md"
-        >
-          <IssueDetails
-            issue={
-              paginatedIssues.length > 0 &&
-              selectedIndex >= (currentPage - 1) * pageSize &&
-              selectedIndex < currentPage * pageSize
-                ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
-                : null
-            }
+          <Sidebar
+            sidebarOpen={sidebarOpen}
+            languageFilters={languageFilters}
+            labelFilters={labelFilters}
+            setLanguageFilters={setLanguageFilters}
+            setLabelFilters={setLabelFilters}
           />
-        </Box>
+
+          {/* Sidebar Toggle */}
+          <IconButton
+            aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            position="fixed"
+            top="80px"
+            left={sidebarOpen ? ["80vw", "300px"] : "0"}
+            transform="translateX(-50%)"
+            size="sm"
+            borderRadius="full"
+            bg={useColorModeValue("gray.200", "gray.700")}
+            color={useColorModeValue("gray.800", "white")}
+            boxShadow="md"
+            _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
+            zIndex={1100}
+          />
+
+          {/* Issue List */}
+          <IssueList
+            issues={paginatedIssues}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            selectedIndex={selectedIndex}
+            setSelectedIndex={setSelectedIndex}
+            pageSize={pageSize}
+          />
+
+          {/* Issue Details */}
+          <Box
+            flex="1"
+            p={6}
+            ml={[0, 4]}
+            maxWidth="100%"
+            maxH="calc(100vh - 96px)"
+            overflowY="auto"
+            bg={useColorModeValue("white", "gray.800")}
+            borderRadius="md"
+            boxShadow="md"
+          >
+            <IssueDetails
+              issue={
+                paginatedIssues.length > 0 &&
+                selectedIndex >= (currentPage - 1) * pageSize &&
+                selectedIndex < currentPage * pageSize
+                  ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
+                  : null
+              }
+            />
+          </Box>
         </Flex>
       </Box>
 
