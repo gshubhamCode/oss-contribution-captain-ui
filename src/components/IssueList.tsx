@@ -131,6 +131,7 @@ const IssueList: React.FC<Props> = ({
                 py={4}
                 px={4}
                 mb={1}
+                minHeight="100px"
                 borderBottomWidth="1px"
                 cursor="pointer"
                 bg={isSelected ? selectedBg : "transparent"}
@@ -150,7 +151,7 @@ const IssueList: React.FC<Props> = ({
                 <Text
                   fontSize="sm"
                   color={useColorModeValue("gray.600", "gray.400")}
-                  noOfLines={2}
+                  noOfLines={3}
                 >
                   {typeof summary?.main === "string"? summary.main :  "No summary available"}
                 </Text>
