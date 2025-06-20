@@ -6,38 +6,18 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
-  Divider
+  Divider,
+  Badge,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import Pagination from "./Pagination";
 
 interface Repository {
-  description: string;
-  homepage: string;
   name: string;
   fullName: string;
   htmlUrl: string;
-  gitUrl: string;
-  sshUrl: string;
-  cloneUrl: string;
-  owner: {
-    login: string;
-    avatarUrl: string | null;
-    htmlUrl: string | null;
-  };
-  hasIssues: boolean;
-  fork: boolean;
-  hasDownloads: boolean;
-  archived: boolean;
-  disabled: boolean;
-  forksCount: number;
-  stargazersCount: number;
-  watchersCount: number;
-  size: number;
-  openIssuesCount: number;
-  subscribersCount: number;
-  pushedAt: string;
-  language: string;
-  private: boolean;
+  languages?: { [key: string]: number };
 }
 
 interface IssueDTO {
@@ -110,10 +90,14 @@ const IssueList: React.FC<Props> = ({
       <Stack spacing={0}>
         {issues.map((issue, idx) => {
           const isSelected = selectedIndex === (currentPage - 1) * pageSize + idx;
-          const { title } = issue.issueDTO;
+          const { title, repository } = issue.issueDTO;
           const summary = issue.summary;
 
           const tooltipContent = title;
+
+          const languageKeys = repository?.languages
+            ? Object.keys(repository.languages).sort((a, b) => a.localeCompare(b))
+            : [];
 
           return (
             <Tooltip
@@ -147,14 +131,36 @@ const IssueList: React.FC<Props> = ({
                 >
                   {title}
                 </Text>
+
                 <Box h="2" />
                 <Text
                   fontSize="sm"
                   color={useColorModeValue("gray.600", "gray.400")}
                   noOfLines={3}
                 >
-                  {typeof summary?.main === "string"? summary.main :  "No summary available"}
+                  {typeof summary?.main === "string"
+                    ? summary.main
+                    : "No summary available"}
                 </Text>
+
+                  {/* Language badges */}
+                  {languageKeys.length > 0 && (
+                  <Wrap mt={2}>
+                    {languageKeys.map((lang) => (
+                      <WrapItem key={lang}>
+                        <Badge
+                          colorScheme="purple"
+                          borderRadius="md"
+                          fontSize="xs"
+                          px={2}
+                          py={0.5}
+                        >
+                          {lang}
+                        </Badge>
+                      </WrapItem>
+                    ))}
+                  </Wrap>
+                )}
               </Box>
             </Tooltip>
           );

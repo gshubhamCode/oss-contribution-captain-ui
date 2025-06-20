@@ -37,8 +37,6 @@ const getLabelColor = (label: string): string => {
 
 const IssueDetails: React.FC<Props> = ({ issue }) => {
   const textColor = useColorModeValue("gray.700", "gray.300");
-  const cardBg = useColorModeValue("white", "gray.800");
-  
 
   if (!issue) {
     return (
@@ -51,117 +49,187 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
   const { issueDTO, summary } = issue;
 
   return (
-<>
-    <Flex mb={6} gap={6} direction={{ base: "column", md: "row" }}>
-        
-    {/* Left column: Avatar + GitHub link */}
-    <Flex justifyContent="flex-end" mb={4}>
-  <Link
-    href={issueDTO.userHtmlUrl}
-    isExternal
-    display="flex"
-    flexDirection="column"
-    alignItems="center"
-    textDecoration="none" 
-    _hover={{ textDecoration: "none" }}
-  >
-    <Image
-      src={issueDTO.userAvatarUrl}
-      alt={`${issueDTO.user}'s avatar`}
-      boxSize="16"
-      borderRadius="full"
-      objectFit="cover"
-      mb={2}
-      boxShadow="md"
-      transition="transform 0.2s ease, box-shadow 0.2s ease"
-      _hover={{ transform: "scale(1.05)", boxShadow: "xl" }}
-    />
-    <Text
-      fontSize="md" // slightly larger
-      fontWeight="semibold"
-      color={useColorModeValue("gray.700", "gray.200")}
-      textDecoration="none"
-      _hover={{ textDecoration: "none" }}
-    >
-      {issueDTO.user}
-    </Text>
-  </Link>
-</Flex>
-
-  {/* Right column: Title, issue link, and labels */}
-  <Box flex="1">
-    <Heading as="h2" size="lg" mb={2}>
-      {issueDTO.title}
-    </Heading>
-
-    <Text mb={1}>
-      <Text as="span" fontWeight="bold" color={textColor}>
-        Issue Link:
-      </Text>{" "}
-      <Link href={issueDTO.url} isExternal color="blue.500">
-        {issueDTO.repositoryName}
-      </Link>
-    </Text>
-
-    {/* Labels right below issue link */}
-    <Flex wrap="wrap" gap={2} mt={2}>
-      {(issueDTO.labels || []).length > 0 ? (
-        issueDTO.labels.map((label: string, idx: number) => (
-          <Badge
-            key={idx}
-            colorScheme={getLabelColor(label)}
-            variant="solid"
-            borderRadius="full"
-            px={3}
-            py={1}
-            fontSize="sm"
+    <>
+      <Flex mb={6} gap={6} direction={{ base: "column", md: "row" }}>
+        {/* Left column: Avatar + GitHub link */}
+        <Flex justifyContent="flex-end" mb={4}>
+          <Link
+            href={issueDTO.userHtmlUrl}
+            isExternal
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            textDecoration="none"
+            _hover={{ textDecoration: "none" }}
           >
-            {label}
-          </Badge>
-        ))
-      ) : (
-        <Text color={useColorModeValue("gray.500", "gray.400")}>No labels</Text>
-      )}
-    </Flex>
-  </Box>
-</Flex>
+            <Image
+              src={issueDTO.userAvatarUrl}
+              alt={`${issueDTO.user}'s avatar`}
+              boxSize="16"
+              borderRadius="full"
+              objectFit="cover"
+              mb={2}
+              boxShadow="md"
+              transition="transform 0.2s ease, box-shadow 0.2s ease"
+              _hover={{ transform: "scale(1.05)", boxShadow: "xl" }}
+            />
+            <Text
+              fontSize="md"
+              fontWeight="semibold"
+              color={useColorModeValue("gray.700", "gray.200")}
+              textDecoration="none"
+              _hover={{ textDecoration: "none" }}
+            >
+              {issueDTO.user}
+            </Text>
+          </Link>
+        </Flex>
+
+        {/* Right column: Title, issue link, labels, and repo details */}
+        <Box flex="1">
+          <Flex justifyContent="space-between" alignItems="flex-start" mb={2} flexWrap="wrap">
+            <Heading as="h2" size="lg" maxWidth={{ base: "100%", md: "70%" }}>
+              {issueDTO.title}
+            </Heading>
+
+            {/* Repository details on extreme right */}
+            <Box
+              textAlign="right"
+              fontSize="sm"
+              color={useColorModeValue("gray.600", "gray.400")}
+              whiteSpace="nowrap"
+              mt={{ base: 2, md: 0 }}
+            >
+              <Link
+                href={issueDTO.repositoryHtmlUrl}
+                isExternal
+                _hover={{ textDecoration: "underline" }}
+              >
+                <Text fontWeight="bold">{issueDTO.repositoryName}</Text>
+              </Link>
+
+              <Link
+                href={issueDTO.repositoryHtmlUrl}
+                isExternal
+                _hover={{ textDecoration: "none" }}
+              >
+                <Text fontSize={{ base: "sm", md: "md" }} mt={1}>
+                  ⭐ {issueDTO.repository.stargazersCount} | 👀 {issueDTO.repository.subscribersCount} | 🍴 {issueDTO.repository.forksCount}
+                </Text>
+              </Link>
+              
+            </Box>
+            
+          </Flex>
+
+          <Text mb={1}>
+            <Text as="span" fontWeight="bold" color={textColor}>
+              Issue Link:
+            </Text>{" "}
+            <Link href={issueDTO.url} isExternal color="blue.500">
+              {issueDTO.repositoryName}
+            </Link>
+          </Text>
+
+          {/* Labels below issue link */}
+          <Flex justifyContent="space-between" alignItems="center" wrap="wrap" gap={2} mt={2}>
+            <Flex wrap="wrap" gap={2} maxWidth={{ base: "100%", md: "70%" }}>
+              {(issueDTO.labels || []).length > 0 ? (
+                issueDTO.labels.map((label: string, idx: number) => (
+                  <Badge
+                    key={idx}
+                    colorScheme={getLabelColor(label)}
+                    variant="solid"
+                    borderRadius="full"
+                    px={2}
+                    py={0.5}
+                    fontSize="xs"
+                  >
+                    {label}
+                  </Badge>
+                ))
+              ) : (
+                <Text color={useColorModeValue("gray.500", "gray.400")}>No labels</Text>
+              )}
+            </Flex>
+          </Flex>
+        </Box>
+      </Flex>
 
       <Divider my={5} />
 
-      {/* Summary section */}
+      {/* Summary section (unchanged) */}
       <Heading as="h3" size="md" mb={4} display="flex" alignItems="center">
-      ✨ AI Generated Summary
+        ✨ AI Generated Summary
       </Heading>
 
       {summary?.validJson ? (
         <VStack align="start" spacing={4} color={textColor} mt={2}>
           {summary.main && (
-            <Box p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")} w="full" boxShadow="sm">
-              <Heading size="sm" mb={1}>📝 Main request or goal</Heading>
+            <Box
+              p={4}
+              borderRadius="md"
+              bg={useColorModeValue("gray.50", "gray.700")}
+              w="full"
+              boxShadow="sm"
+            >
+              <Heading size="sm" mb={1}>
+                📝 Main request or goal
+              </Heading>
               <Text whiteSpace="pre-wrap">{summary.main}</Text>
             </Box>
           )}
           {summary.validationOrRequirement && (
-            <Box p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")} w="full" boxShadow="sm">
-              <Heading size="sm" mb={1}>✅ Validation rules or requirements</Heading>
+            <Box
+              p={4}
+              borderRadius="md"
+              bg={useColorModeValue("gray.50", "gray.700")}
+              w="full"
+              boxShadow="sm"
+            >
+              <Heading size="sm" mb={1}>
+                ✅ Validation rules or requirements
+              </Heading>
               <Text whiteSpace="pre-wrap">{summary.validationOrRequirement}</Text>
             </Box>
           )}
           {summary.attemptedFixes && (
-            <Box p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")} w="full" boxShadow="sm">
-              <Heading size="sm" mb={1}>🧪 Attempted fixes or blockers</Heading>
+            <Box
+              p={4}
+              borderRadius="md"
+              bg={useColorModeValue("gray.50", "gray.700")}
+              w="full"
+              boxShadow="sm"
+            >
+              <Heading size="sm" mb={1}>
+                🧪 Attempted fixes or blockers
+              </Heading>
               <Text whiteSpace="pre-wrap">{summary.attemptedFixes}</Text>
             </Box>
           )}
           {summary.otherNotes && (
-            <Box p={4} borderRadius="md" bg={useColorModeValue("gray.50", "gray.700")} w="full" boxShadow="sm">
-              <Heading size="sm" mb={1}>🗒 Other notes</Heading>
+            <Box
+              p={4}
+              borderRadius="md"
+              bg={useColorModeValue("gray.50", "gray.700")}
+              w="full"
+              boxShadow="sm"
+            >
+              <Heading size="sm" mb={1}>
+                🗒 Other notes
+              </Heading>
               <Text whiteSpace="pre-wrap">{summary.otherNotes}</Text>
             </Box>
           )}
         </VStack>
       ) : (
-        <Box mt={2} p={4} bg={useColorModeValue("gray.50", "gray.700")} borderRadius="md" boxShadow="sm">
+        <Box
+          mt={2}
+          p={4}
+          bg={useColorModeValue("gray.50", "gray.700")}
+          borderRadius="md"
+          boxShadow="sm"
+        >
           <Text color={textColor} whiteSpace="pre-wrap">
             {typeof summary?.summaryText === "string"
               ? summary.summaryText
@@ -169,23 +237,23 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
           </Text>
         </Box>
       )}
+
       {/* Coming soon label */}
       <Flex mt={6} justifyContent="flex-end">
-  <Text
-    fontSize="sm"
-    color={useColorModeValue("blue.600", "teal.300")}
-    fontWeight="semibold"
-    bg={useColorModeValue("blue.50", "teal.900")}
-    px={3}
-    py={1}
-    borderRadius="md"
-    boxShadow="sm"
-    userSelect="none"
-  >
-    💬 Coming up: AI chat feature!
-  </Text>
-</Flex>
-
+        <Text
+          fontSize="sm"
+          color={useColorModeValue("blue.600", "teal.300")}
+          fontWeight="semibold"
+          bg={useColorModeValue("blue.50", "teal.900")}
+          px={3}
+          py={1}
+          borderRadius="md"
+          boxShadow="sm"
+          userSelect="none"
+        >
+          💬 Coming up: AI chat feature!
+        </Text>
+      </Flex>
     </>
   );
 };
