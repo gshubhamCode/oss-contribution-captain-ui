@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Flex,
@@ -21,6 +21,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 
 export default function App() {
+  const hasFetched = useRef(false);
+
   const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [labelFilters, setLabelFilters] = useState<string[]>([]);
@@ -33,12 +35,12 @@ export default function App() {
 
   const pageSize = 15;
 
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log(`${import.meta.env.VITE_BACKEND_URL}`);
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}`);
+      const response = await fetch(`http://localhost:8080/issues/summaries`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
@@ -51,7 +53,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchData();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchData();
+    }
   }, []);
 
   const issueMatches = (issue: any) => {
@@ -106,7 +111,7 @@ export default function App() {
       <Box textAlign="center" p={8} bg={useColorModeValue("gray.50", "gray.900")} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
         <Spinner size="xl" thickness="4px" speed="0.65s" color={useColorModeValue("teal.500", "teal.300")} />
         <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
-          Loading issues...
+          Loading GitHub Issues...
         </Text>
       </Box>
     );

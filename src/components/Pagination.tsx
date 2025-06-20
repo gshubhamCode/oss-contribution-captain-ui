@@ -52,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         colorScheme="gray"
         variant="outline"
       >
-        Previous
+        Prev
       </Button>
 
       <Text>

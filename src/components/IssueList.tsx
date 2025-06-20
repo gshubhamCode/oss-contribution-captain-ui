@@ -9,15 +9,70 @@ import {
 } from "@chakra-ui/react";
 import Pagination from "./Pagination";
 
-type Props = {
-  issues: any[];
+interface Repository {
+  description: string;
+  homepage: string;
+  name: string;
+  fullName: string;
+  htmlUrl: string;
+  gitUrl: string;
+  sshUrl: string;
+  cloneUrl: string;
+  owner: {
+    login: string;
+    avatarUrl: string | null;
+    htmlUrl: string | null;
+  };
+  hasIssues: boolean;
+  fork: boolean;
+  hasDownloads: boolean;
+  archived: boolean;
+  disabled: boolean;
+  forksCount: number;
+  stargazersCount: number;
+  watchersCount: number;
+  size: number;
+  openIssuesCount: number;
+  subscribersCount: number;
+  pushedAt: string;
+  language: string;
+  private: boolean;
+}
+
+interface IssueDTO {
+  title: string;
+  user: string;
+  userAvatarUrl: string;
+  userHtmlUrl: string;
+  url: string;
+  repositoryName: string;
+  labels: string[];
+  repository?: Repository;
+}
+
+interface Summary {
+  main?: string;
+  validationOrRequirement?: string;
+  attemptedFixes?: string;
+  otherNotes?: string;
+  summaryText?: string;
+  validJson: boolean;
+}
+
+interface Issue {
+  issueDTO: IssueDTO;
+  summary: Summary;
+}
+
+interface Props {
+  issues: Issue[];
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   selectedIndex: number;
   setSelectedIndex: (index: number) => void;
   pageSize: number;
-};
+}
 
 const IssueList: React.FC<Props> = ({
   issues,
@@ -47,15 +102,15 @@ const IssueList: React.FC<Props> = ({
       bg={bg}
     >
       <Heading as="h3" size="md" mb={4}>
-        Git Issues
+        GitHub Open Issues
       </Heading>
       <Stack spacing={0}>
         {issues.map((issue, idx) => {
           const isSelected = selectedIndex === (currentPage - 1) * pageSize + idx;
           const { title } = issue.issueDTO;
-          const summary = issue.summary || "";
+          const summary = issue.summary;
 
-          const tooltipContent = `${title}`;
+          const tooltipContent = title;
 
           return (
             <Tooltip
@@ -94,7 +149,7 @@ const IssueList: React.FC<Props> = ({
                   color={useColorModeValue("gray.600", "gray.400")}
                   noOfLines={2}
                 >
-                  {summary}
+                  {typeof summary?.main === "string"? summary.main :  "No summary available"}
                 </Text>
               </Box>
             </Tooltip>
