@@ -50,13 +50,8 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
   const { issueDTO, summary } = issue;
 
   return (
-    <Box
-      bg={cardBg}
-      p={5}
-      borderRadius="lg"
-      boxShadow="md"
-    >
-      <Flex mb={6} gap={6} direction={{ base: "column", md: "row" }}>
+<>
+    <Flex mb={6} gap={6} direction={{ base: "column", md: "row" }}>
         
     {/* Left column: Avatar + GitHub link */}
     <Flex justifyContent="flex-end" mb={4}>
@@ -173,7 +168,7 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
           </Text>
         </Box>
       )}
-    </Box>
+    </>
   );
 };
 
