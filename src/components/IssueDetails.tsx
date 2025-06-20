@@ -38,6 +38,7 @@ const getLabelColor = (label: string): string => {
 const IssueDetails: React.FC<Props> = ({ issue }) => {
   const textColor = useColorModeValue("gray.700", "gray.300");
   const cardBg = useColorModeValue("white", "gray.800");
+  
 
   if (!issue) {
     return (
@@ -61,7 +62,7 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
     display="flex"
     flexDirection="column"
     alignItems="center"
-    textDecoration="none" // disables underline
+    textDecoration="none" 
     _hover={{ textDecoration: "none" }}
   >
     <Image
@@ -129,7 +130,7 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
 
       {/* Summary section */}
       <Heading as="h3" size="md" mb={4} display="flex" alignItems="center">
-        AI Generated Summary
+      ✨ AI Generated Summary
       </Heading>
 
       {summary?.validJson ? (
@@ -168,6 +169,23 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
           </Text>
         </Box>
       )}
+      {/* Coming soon label */}
+      <Flex mt={6} justifyContent="flex-end">
+  <Text
+    fontSize="sm"
+    color={useColorModeValue("blue.600", "teal.300")}
+    fontWeight="semibold"
+    bg={useColorModeValue("blue.50", "teal.900")}
+    px={3}
+    py={1}
+    borderRadius="md"
+    boxShadow="sm"
+    userSelect="none"
+  >
+    💬 Coming up: AI chat feature!
+  </Text>
+</Flex>
+
     </>
   );
 };

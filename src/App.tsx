@@ -33,8 +33,10 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const pageSize = 15;
+  const [availableLabels, setAvailableLabels] = useState<string[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
 
+  const pageSize = 15;
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,6 +46,32 @@ export default function App() {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
+
+      // labels extraction: force typing to string[]
+    const allLabels = Array.from(
+      new Set(
+        data.summaries.flatMap((issue: any) => {
+          const labels = issue.issueDTO.labels;
+          return Array.isArray(labels) ? labels : [];
+        })
+      )
+    ).sort();
+
+    // languages extraction: force typing of Object.keys to string[]
+    const allLanguages = Array.from(
+      new Set(
+        data.summaries.flatMap((issue: any) => {
+          const langsMap = issue.issueDTO.repository?.languages;
+          return langsMap && typeof langsMap === "object"
+            ? Object.keys(langsMap)
+            : [];
+        })
+      )
+    ).sort();
+
+
+      setAvailableLabels(allLabels);
+      setAvailableLanguages(allLanguages);
     } catch (err) {
       setError("Uh oh, something went wrong while fetching the issues.");
       console.error(err);
@@ -64,8 +92,10 @@ export default function App() {
     const title = issueDTO.title.toLowerCase();
     const issueId = String(issueDTO.id);
     const labels = issueDTO.labels?.map((l: string) => l.toLowerCase()) || [];
-    const languages = issue.languages || [];
-
+  
+    const languagesMap = issueDTO.repository?.languages || {};
+    const languages = Object.keys(languagesMap);
+  
     const searchLower = searchInput.toLowerCase();
     const searchMatch =
       !searchLower ||
@@ -73,12 +103,18 @@ export default function App() {
       issueId.includes(searchLower) ||
       labels.some((l: string) => l.includes(searchLower)) ||
       languages.some((lang: string) => lang.toLowerCase().includes(searchLower));
-
-    const langMatch = !languageFilters.length || languageFilters.some((lang) => languages.includes(lang));
-    const labelMatch = !labelFilters.length || labelFilters.some((lbl) => labels.includes(lbl));
-
+  
+    const langMatch =
+      !languageFilters.length ||
+      languageFilters.some((lang) => languages.includes(lang));
+  
+    const labelMatch =
+      !labelFilters.length ||
+      labelFilters.some((lbl) => labels.includes(lbl));
+  
     return searchMatch && langMatch && labelMatch;
   };
+  
 
   const filteredIssues = issues.filter(issueMatches);
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
@@ -108,14 +144,14 @@ export default function App() {
 
   if (loading)
     return (
-      <Box textAlign="center" p={8} bg={useColorModeValue("gray.50", "gray.900")} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <Box textAlign="center" p={8} bg={bgColor} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
         <Spinner size="xl" thickness="4px" speed="0.65s" color={useColorModeValue("teal.500", "teal.300")} />
         <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
           Loading GitHub Issues...
         </Text>
       </Box>
     );
-  
+
   if (error)
     return (
       <Box
@@ -126,42 +162,16 @@ export default function App() {
         mt={20}
         bg={useColorModeValue("red.50", "red.900")}
         borderRadius="md"
-        boxShadow={useColorModeValue(
-          "0 0 10px rgba(220, 38, 38, 0.3)",
-          "0 0 10px rgba(245, 101, 101, 0.6)"
-        )}
+        boxShadow={useColorModeValue("0 0 10px rgba(220, 38, 38, 0.3)", "0 0 10px rgba(245, 101, 101, 0.6)")}
       >
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
-          color={useColorModeValue("red.600", "red.300")}
-        >
-          {error}
-        </Text>
-        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
-          Please check your network connection or try again later.
-        </Text>
-        <Button
-          mt={6}
-          colorScheme="red"
-          onClick={() => {
-            fetchData();
-          }}
-        >
-          Retry
-        </Button>
+        <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("red.600", "red.300")}>{error}</Text>
+        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>Please check your network connection or try again later.</Text>
+        <Button mt={6} colorScheme="red" onClick={fetchData}>Retry</Button>
       </Box>
     );
-  
 
   return (
-    <Box
-      minH="100vh"
-      bg={bgColor}
-      color={useColorModeValue("gray.800", "white")}
-      display="flex"
-      flexDirection="column"
-    >
+    <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")} display="flex" flexDirection="column">
       <Header
         searchInput={searchInput}
         setSearchInput={setSearchInput}
@@ -177,6 +187,8 @@ export default function App() {
             labelFilters={labelFilters}
             setLanguageFilters={setLanguageFilters}
             setLabelFilters={setLabelFilters}
+            availableLanguages={availableLanguages}
+            availableLabels={availableLabels}
           />
 
           {/* Sidebar Toggle */}
