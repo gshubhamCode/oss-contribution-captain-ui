@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({
       </Heading>
       <Flex flex={1} justifyContent="center" mx={4}>
         <Input
-          placeholder="Search by ID, title, language, label..."
+          placeholder="Search by title, language, label..."
           value={searchInput}
           onKeyDown={onSearchKeyDown}
           onChange={(e) => setSearchInput(e.target.value)}
