@@ -57,27 +57,40 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
       boxShadow="md"
     >
       <Flex mb={6} gap={6} direction={{ base: "column", md: "row" }}>
-  {/* Left column: Avatar + GitHub link */}
-  <Box textAlign="center" minW="fit-content">
+        
+    {/* Left column: Avatar + GitHub link */}
+    <Flex justifyContent="flex-end" mb={4}>
+  <Link
+    href={issueDTO.userHtmlUrl}
+    isExternal
+    display="flex"
+    flexDirection="column"
+    alignItems="center"
+    textDecoration="none" // disables underline
+    _hover={{ textDecoration: "none" }}
+  >
     <Image
       src={issueDTO.userAvatarUrl}
-      alt="avatar"
-      boxSize="20"
+      alt={`${issueDTO.user}'s avatar`}
+      boxSize="16"
       borderRadius="full"
       objectFit="cover"
-      shadow="md"
       mb={2}
+      boxShadow="md"
+      transition="transform 0.2s ease, box-shadow 0.2s ease"
+      _hover={{ transform: "scale(1.05)", boxShadow: "xl" }}
     />
-    <Link
-      href={issueDTO.userHtmlUrl}
-      isExternal
-      fontSize="sm"
-      color="blue.500"
-      wordBreak="break-word"
+    <Text
+      fontSize="md" // slightly larger
+      fontWeight="semibold"
+      color={useColorModeValue("gray.700", "gray.200")}
+      textDecoration="none"
+      _hover={{ textDecoration: "none" }}
     >
       {issueDTO.user}
-    </Link>
-  </Box>
+    </Text>
+  </Link>
+</Flex>
 
   {/* Right column: Title, issue link, and labels */}
   <Box flex="1">

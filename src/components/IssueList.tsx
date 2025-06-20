@@ -6,6 +6,7 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
+  Divider
 } from "@chakra-ui/react";
 import Pagination from "./Pagination";
 
@@ -104,6 +105,8 @@ const IssueList: React.FC<Props> = ({
       <Heading as="h3" size="md" mb={4}>
         GitHub Open Issues
       </Heading>
+      <Divider mb={4} />
+
       <Stack spacing={0}>
         {issues.map((issue, idx) => {
           const isSelected = selectedIndex === (currentPage - 1) * pageSize + idx;
