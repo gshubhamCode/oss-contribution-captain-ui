@@ -47,7 +47,7 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
     );
   }
 
-  const { issueDTO, summary } = issue;
+  const { issueDTO, summary, updatedAt } = issue;
 
   return (
     <>
@@ -94,55 +94,64 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
 
         {/* Middle: Title, issue link, labels */}
         <Box flex="1" minWidth={0}>
-          <Tooltip
-            label={issueDTO.title}
-            hasArrow
-            placement="top-start"
-            openDelay={300}
-          >
-            <Heading
-              as="h2"
-              size="lg"
-              isTruncated
-              cursor="pointer"
-              mb={2}
-              maxWidth="100%"
-            >
-              {issueDTO.title}
-            </Heading>
-          </Tooltip>
+  <Tooltip
+    label={issueDTO.title}
+    hasArrow
+    placement="top-start"
+    openDelay={300}
+  >
+    <Heading
+      as="h2"
+      size="lg"
+      isTruncated
+      cursor="pointer"
+      mb={2}
+      maxWidth="100%"
+    >
+      {issueDTO.title}
+    </Heading>
+  </Tooltip>
 
-          <Text mb={1} maxWidth="100%" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-            <Text as="span" fontWeight="bold" color={textColor}>
-              Issue Link:
-            </Text>{" "}
-            <Link href={issueDTO.url} isExternal color="blue.500" isTruncated>
-              {issueDTO.repositoryName}
-            </Link>
-          </Text>
+  <Text mb={1} maxWidth="100%" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+    <Text as="span" fontWeight="bold" color={textColor}>
+      Issue Link:
+    </Text>{" "}
+    <Link href={issueDTO.url} isExternal color="blue.500" isTruncated>
+      {issueDTO.repositoryName}
+    </Link>
+  </Text>
 
-          <Flex wrap="wrap" gap={2} mt={2}>
-            {(issueDTO.labels || []).length > 0 ? (
-              issueDTO.labels.map((label: string, idx: number) => (
-                <Badge
-                  key={idx}
-                  colorScheme={getLabelColor(label)}
-                  variant="solid"
-                  borderRadius="full"
-                  px={2}
-                  py={0.5}
-                  fontSize="xs"
-                >
-                  {label}
-                </Badge>
-              ))
-            ) : (
-              <Text color={useColorModeValue("gray.500", "gray.400")}>
-                No labels
-              </Text>
-            )}
-          </Flex>
-        </Box>
+  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
+    GitHub Issue Last updated: {new Date(updatedAt * 1000).toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        hour12: true, // ✅ 12-hour format with AM/PM
+      })}
+  </Text>
+
+  <Flex wrap="wrap" gap={2} mt={2}>
+    {(issueDTO.labels || []).length > 0 ? (
+      issueDTO.labels.map((label: string, idx: number) => (
+        <Badge
+          key={idx}
+          colorScheme={getLabelColor(label)}
+          variant="solid"
+          borderRadius="full"
+          px={2}
+          py={0.5}
+          fontSize="xs"
+        >
+          {label}
+        </Badge>
+      ))
+    ) : (
+      <Text color={useColorModeValue("gray.500", "gray.400")}>
+        No labels
+      </Text>
+    )}
+  </Flex>
+</Box>
+
 
         {/* Right: Repository details */}
         <Box
@@ -179,10 +188,26 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
 
       <Divider my={5} />
 
-      {/* Summary section */}
-      <Heading as="h3" size="md" mb={4} display="flex" alignItems="center">
-        ✨ AI Generated Summary
-      </Heading>
+      <Flex mb={4} alignItems="center" gap={2} flexWrap="wrap">
+  <Heading as="h3" size="md">
+    ✨ AI Generated Summary
+  </Heading>
+  {updatedAt && (
+    <Text
+      fontSize="sm"
+      color={useColorModeValue("gray.500", "gray.400")}
+    >
+      Last updated:&nbsp;
+      {new Date(updatedAt * 1000).toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        hour12: true, // ✅ 12-hour format with AM/PM
+      })}
+    </Text>
+  )}
+</Flex>
+
+      
 
       {summary?.validJson ? (
         <VStack align="start" spacing={4} color={textColor} mt={2}>
