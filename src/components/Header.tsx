@@ -24,20 +24,23 @@ const Header: React.FC<HeaderProps> = ({
   onSearchKeyDown,
   notificationMessages,
 }) => {
-  const { colorMode, setColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode();
   const [isBannerVisible, setIsBannerVisible] = useState(true);
 
   const toggleColorModeWithPersistence = () => {
-    const nextMode = colorMode === "light" ? "dark" : "light";
-    setColorMode(nextMode);
+    const currentMode = localStorage.getItem("theme") || colorMode;
+    const nextMode = currentMode === "light" ? "dark" : "light";
     localStorage.setItem("theme", nextMode);
+    toggleColorMode();
   };
 
   const resetToAutoTheme = () => {
     localStorage.removeItem("theme");
     const hour = new Date().getHours();
     const preferDark = hour >= 19 || hour < 6;
-    setColorMode(preferDark ? "dark" : "light");
+    if ((preferDark && colorMode === "light") || (!preferDark && colorMode === "dark")) {
+      toggleColorMode();
+    }
   };
 
   return (
@@ -71,7 +74,6 @@ const Header: React.FC<HeaderProps> = ({
           />
         </Flex>
 
-        {/* Theme Controls with Tooltips */}
         <Flex gap={2}>
           <Tooltip label="Toggle theme (light/dark)" hasArrow>
             <IconButton
@@ -95,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({
         </Flex>
       </Flex>
 
-      {notificationMessages && notificationMessages.length > 0 && (
+      {notificationMessages && isBannerVisible && notificationMessages.length > 0 && (
         <Box w="100%" mt="4" position="relative" top="60px" zIndex={40}>
           {notificationMessages.map((msg, index) => (
             <Box
@@ -108,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({
               borderBottom="1px solid"
               borderColor="yellow.300"
             >
-              ⚠️ {msg}
+              ⚠️ { msg}
             </Box>
           ))}
         </Box>

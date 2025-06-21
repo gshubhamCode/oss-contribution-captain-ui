@@ -15,6 +15,7 @@ import {
   ArrowUpIcon,
 } from "@chakra-ui/icons";
 import DisclaimerModal from "./components/DisclaimerModal";
+import SetColorModeBasedOnTime from "./components/SetColorModeBasedOnTime";
 import { NotificationBanner } from "./types/NotificationBanner";
 import Sidebar from "./components/Sidebar";
 import IssueList from "./components/IssueList";
@@ -53,18 +54,6 @@ export default function App() {
         console.error("Failed to fetch banners", err);
       });
   }, []);
-
-  const SetColorModeBasedOnTime = () => {
-    const { setColorMode } = useColorMode();
-
-    useEffect(() => {
-      const hour = new Date().getHours();
-      const preferDark = hour >= 19 || hour < 6;
-      setColorMode(preferDark ? "dark" : "light");
-    }, [setColorMode]);
-
-    return null;
-  };
 
   const fetchData = async () => {
     setLoading(true);
