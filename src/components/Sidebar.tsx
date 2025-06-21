@@ -8,6 +8,13 @@ import {
   Radio,
   Button,
   IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  useDisclosure,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Select, { MultiValue } from "react-select";
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
@@ -108,6 +115,7 @@ const Sidebar: React.FC<Props> = ({
   setSortOption,
 }) => {
   const colorMode = useColorModeValue("light", "dark");
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const languageOptions: OptionType[] = availableLanguages.map((lang) => ({
     value: lang,
@@ -125,22 +133,114 @@ const Sidebar: React.FC<Props> = ({
     setSortOption("updated");
   };
 
+  const content = (
+    <>
+      
+      <Heading as="h3" size="md" mb={4}>
+        Language
+      </Heading>
+      <Select
+        options={languageOptions}
+        isMulti
+        value={languageOptions.filter((opt) =>
+          languageFilters.includes(opt.value)
+        )}
+        onChange={(selected: MultiValue<OptionType>) => {
+          const values = selected ? selected.map((s) => s.value) : [];
+          setLanguageFilters(values);
+        }}
+        styles={customStyles(colorMode)}
+        placeholder="Select languages..."
+      />
+
+      <Heading as="h3" size="md" mt={6} mb={4}>
+        Framework / Label
+      </Heading>
+      <Select
+        options={labelOptions}
+        isMulti
+        value={labelOptions.filter((opt) =>
+          labelFilters.includes(opt.value)
+        )}
+        onChange={(selected: MultiValue<OptionType>) => {
+          const values = selected ? selected.map((s) => s.value) : [];
+          setLabelFilters(values);
+        }}
+        styles={customStyles(colorMode)}
+        placeholder="Select labels..."
+      />
+
+      <Heading as="h3" size="md" mt={6} mb={4}>
+        Sort Issues By
+      </Heading>
+      <RadioGroup
+        onChange={(value) => setSortOption(value)}
+        value={sortOption}
+        color={colorMode === "light" ? "black" : "white"}
+      >
+        <Stack spacing={3}>
+          <Radio value="updated">Recently Updated</Radio>
+          <Radio value="forks">Fork Count</Radio>
+          <Radio value="stars">Star Count</Radio>
+          <Radio value="watchers">Watchers Count</Radio>
+          <Radio value="created">Recently Created</Radio>
+        </Stack>
+      </RadioGroup>
+
+      <Button
+        mt={6}
+        size="sm"
+        variant="outline"
+        colorScheme="gray"
+        onClick={handleResetFilters}
+      >
+        Reset Filters
+      </Button>
+    </>
+  );
+
   return (
     <>
-      <Box
-        as="nav"
-        position="relative"
-        top="64px"
-        h="calc(100vh - 160px)"
-        w={sidebarOpen ? ["80vw", "300px"] : "0"}
-        transition="width 0.3s ease"
-        overflow="hidden"
-        p={sidebarOpen ? 6 : 0}
-        bg={useColorModeValue("gray.50", "gray.800")}
-      >
-
-              {/* Sidebar Toggle Button */}
-      <IconButton
+      {isMobile ? (
+        <>
+          {!sidebarOpen && (
+          <IconButton
+            aria-label="Open sidebar"
+            icon={<ArrowForwardIcon />}
+            onClick={() => setSidebarOpen(true)}
+            position="fixed"
+            top="80px"
+            left="8px"
+            transform="translateX(-50%)"
+            size="sm"
+            zIndex={1500}
+            bg={useColorModeValue("gray.200", "gray.700")}
+            color={useColorModeValue("gray.800", "white")}
+            _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
+            />
+          )}
+          <Drawer isOpen={sidebarOpen} placement="left" onClose={() => setSidebarOpen(false)}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader>Filters & Sorting</DrawerHeader>
+              <DrawerBody>{content}</DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>
+      ) : (
+        <Box
+          as="nav"
+          position="relative"
+          top="64px"
+          h="calc(100vh - 160px)"
+          w={sidebarOpen ? ["80vw", "300px"] : "0"}
+          transition="width 0.3s ease"
+          overflow="hidden"
+          p={sidebarOpen ? 6 : 0}
+          bg={useColorModeValue("gray.50", "gray.800")}
+        >
+          {/* Sidebar Toggle Button */}
+        <IconButton
         aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -157,73 +257,9 @@ const Sidebar: React.FC<Props> = ({
         zIndex={1100}
         transition="left 0.3s ease, width 0.3s ease, height 0.3s ease"
       />
-      
-        {sidebarOpen && (
-          <>
-            <Heading as="h3" size="md" mb={4}>
-              Language
-            </Heading>
-            <Select
-              options={languageOptions}
-              isMulti
-              value={languageOptions.filter((opt) =>
-                languageFilters.includes(opt.value)
-              )}
-              onChange={(selected: MultiValue<OptionType>) => {
-                const values = selected ? selected.map((s) => s.value) : [];
-                setLanguageFilters(values);
-              }}
-              styles={customStyles(colorMode)}
-              placeholder="Select languages..."
-            />
-
-            <Heading as="h3" size="md" mt={6} mb={4}>
-              Framework / Label
-            </Heading>
-            <Select
-              options={labelOptions}
-              isMulti
-              value={labelOptions.filter((opt) => labelFilters.includes(opt.value))}
-              onChange={(selected: MultiValue<OptionType>) => {
-                const values = selected ? selected.map((s) => s.value) : [];
-                setLabelFilters(values);
-              }}
-              styles={customStyles(colorMode)}
-              placeholder="Select labels..."
-            />
-
-            <Heading as="h3" size="md" mt={6} mb={4}>
-              Sort Issues By
-            </Heading>
-            <RadioGroup
-              onChange={(value) => setSortOption(value)}
-              value={sortOption}
-              color={colorMode === "light" ? "black" : "white"}
-            >
-              <Stack spacing={3}>
-                <Radio value="updated" defaultChecked>
-                  Recently Updated
-                </Radio>
-                <Radio value="forks">Fork Count</Radio>
-                <Radio value="stars">Star Count</Radio>
-                <Radio value="watchers">Watchers Count</Radio>
-                <Radio value="created">Recently Created</Radio>
-              </Stack>
-            </RadioGroup>
-
-            <Button
-              mt={6}
-              size="sm"
-              variant="outline"
-              colorScheme="gray"
-              onClick={handleResetFilters}
-            >
-              Reset Filters
-            </Button>
-          </>
-        )}
-      </Box>
-
+          {sidebarOpen && content}
+        </Box>
+      )}
     </>
   );
 };
