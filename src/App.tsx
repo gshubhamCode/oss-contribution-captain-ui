@@ -7,6 +7,7 @@ import {
   IconButton,
   Button,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 
 import {
@@ -56,6 +57,18 @@ useEffect(() => {
       console.error("Failed to fetch banners", err);
     });
 }, []);
+
+const SetColorModeBasedOnTime = () => {
+  const { setColorMode } = useColorMode();
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const preferDark = hour >= 19 || hour < 6;
+    setColorMode(preferDark ? 'dark' : 'light');
+  }, [setColorMode]);
+
+  return null;
+};
 
 
   const fetchData = async () => {
@@ -191,6 +204,9 @@ useEffect(() => {
     );
 
   return (
+    <>
+      <SetColorModeBasedOnTime />
+    
     <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")} display="flex" flexDirection="column">
       <Header
         searchInput={searchInput}
@@ -281,5 +297,6 @@ useEffect(() => {
         _hover={{ bg: "gray.600" }}
       />
     </Box>
+    </>
   );
 }
