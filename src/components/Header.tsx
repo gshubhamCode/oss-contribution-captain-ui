@@ -55,8 +55,15 @@ const Header: React.FC<HeaderProps> = ({
         zIndex={50}
         justifyContent="space-between"
         alignItems="center"
+        flexDirection={{ base: "column", md: "row" }} // stack on mobile
+        gap={{ base: 3, md: 0 }} // spacing for stacked layout
       >
-        <Heading as="h4" size="lg">
+        <Heading 
+            as="h4"
+            size={{ base: "md", sm: "md", md: "lg" }} // smaller on mobile
+            textAlign="center"
+            mb={{ base: 2, md: 0 }}
+        >
           Open Source Contribution Helper
         </Heading>
 
@@ -68,6 +75,7 @@ const Header: React.FC<HeaderProps> = ({
             onChange={(e) => setSearchInput(e.target.value)}
             size="md"
             maxW="md"
+            w="100%"
             bg={useColorModeValue("white", "gray.700")}
             borderColor={useColorModeValue("gray.300", "gray.600")}
             _focus={{ borderColor: "blue.500", boxShadow: "outline" }}
