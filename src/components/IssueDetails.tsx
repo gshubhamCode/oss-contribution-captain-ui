@@ -12,6 +12,8 @@ import {
   Divider,
   Tooltip,
 } from "@chakra-ui/react";
+import { generateLabelColorMap } from "../utils/labelColorMap";
+
 
 type Props = {
   issue: any | null;
@@ -46,8 +48,16 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
       </Text>
     );
   }
-
   const { issueDTO, summary, updatedAt } = issue;
+
+   // Generate color map for labels dynamically
+   const allLabels: string[] = (issueDTO.labels || []).map((l: string) => l.toLowerCase());
+   const labelColorMap = generateLabelColorMap(allLabels);
+ 
+   const getLabelColor = (label: string): string => {
+     return labelColorMap[label.toLowerCase()] || "gray.500";
+   };
+
 
   return (
     <>
@@ -133,14 +143,14 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
     {(issueDTO.labels || []).length > 0 ? (
       issueDTO.labels.map((label: string, idx: number) => (
         <Badge
-          key={idx}
-          colorScheme={getLabelColor(label)}
-          variant="solid"
-          borderRadius="full"
-          px={2}
-          py={0.5}
-          fontSize="xs"
-        >
+              key={idx}
+              colorScheme={getLabelColor(label).split(".")[0]} // extract color family for Chakra badge
+              variant="solid"
+              borderRadius="full"
+              px={2}
+              py={0.5}
+              fontSize="xs"
+            >
           {label}
         </Badge>
       ))
