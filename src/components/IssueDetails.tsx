@@ -122,7 +122,7 @@ const IssueDetails: React.FC<Props> = ({ issue }) => {
   </Text>
 
   <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
-    GitHub Issue Last updated: {new Date(updatedAt * 1000).toLocaleString(undefined, {
+    GitHub Issue Last updated: {new Date(issueDTO.updatedAt * 1000).toLocaleString(undefined, {
         dateStyle: "medium",
         timeStyle: "short",
         hour12: true, // ✅ 12-hour format with AM/PM
