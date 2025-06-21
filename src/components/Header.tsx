@@ -8,14 +8,16 @@ import {
   useColorModeValue,
   Box,
   Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react";
-import { MoonIcon, SunIcon, RepeatIcon } from "@chakra-ui/icons";
+import { MoonIcon, SunIcon, RepeatIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 interface HeaderProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
   onSearchKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   notificationMessages?: string[];
+  setSidebarOpen: (open: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -23,9 +25,13 @@ const Header: React.FC<HeaderProps> = ({
   setSearchInput,
   onSearchKeyDown,
   notificationMessages,
+  setSidebarOpen, 
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const [isBannerVisible, setIsBannerVisible] = useState(true);
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
 
   const toggleColorModeWithPersistence = () => {
     const currentMode = localStorage.getItem("theme") || colorMode;
@@ -55,17 +61,29 @@ const Header: React.FC<HeaderProps> = ({
         zIndex={50}
         justifyContent="space-between"
         alignItems="center"
-        flexDirection={{ base: "column", md: "row" }} // stack on mobile
-        gap={{ base: 3, md: 0 }} // spacing for stacked layout
+        flexDirection={{ base: "column", md: "row" }} 
+        gap={{ base: 2, md: 0 }} 
       >
-        <Heading 
+        <Flex alignItems="center" gap={3} >
+      {isMobile && (
+        <IconButton
+          icon={<HamburgerIcon boxSize={8}/>}
+          aria-label="Open sidebar"
+          size="lg"
+          onClick={() => setSidebarOpen(true)}
+          variant="ghost"
+        />
+      )}
+       <Heading 
             as="h4"
-            size={{ base: "md", sm: "md", md: "lg" }} // smaller on mobile
+            size={{ base: "md", sm: "md", md: "lg" }}
             textAlign="center"
             mb={{ base: 2, md: 0 }}
         >
           Open Source Contribution Helper
         </Heading>
+    </Flex>
+
 
         <Flex flex={1} justifyContent="center" mx={4}>
           <Input

@@ -32,8 +32,9 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [availableLabels, setAvailableLabels] = useState<string[]>([]);
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-  const pageSize = 10;
   const [notificationMessages, setNotificationMessages] = useState<string[]>([]);
+  const pageSize = 10;
+
 
   useEffect(() => {
     fetch("http://localhost:8080/banners")
@@ -231,6 +232,7 @@ export default function App() {
           setSearchInput={setSearchInput}
           onSearchKeyDown={handleSearchKeyDown}
           notificationMessages={notificationMessages}
+          setSidebarOpen={setSidebarOpen}
         />
 
         <DisclaimerModal />

@@ -1,6 +1,8 @@
 import React from "react";
 import {
   Box,
+  Text,
+  Flex,
   Heading,
   useColorModeValue,
   RadioGroup,
@@ -203,22 +205,6 @@ const Sidebar: React.FC<Props> = ({
     <>
       {isMobile ? (
         <>
-          {!sidebarOpen && (
-          <IconButton
-            aria-label="Open sidebar"
-            icon={<ArrowForwardIcon />}
-            onClick={() => setSidebarOpen(true)}
-            position="fixed"
-            top="80px"
-            left="8px"
-            transform="translateX(-50%)"
-            size="sm"
-            zIndex={1500}
-            bg={useColorModeValue("gray.200", "gray.700")}
-            color={useColorModeValue("gray.800", "white")}
-            _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
-            />
-          )}
           <Drawer isOpen={sidebarOpen} placement="left" onClose={() => setSidebarOpen(false)}>
             <DrawerOverlay />
             <DrawerContent>
@@ -239,6 +225,7 @@ const Sidebar: React.FC<Props> = ({
           p={sidebarOpen ? 6 : 0}
           bg={useColorModeValue("gray.50", "gray.800")}
         >
+          
           {/* Sidebar Toggle Button */}
         <IconButton
         aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
