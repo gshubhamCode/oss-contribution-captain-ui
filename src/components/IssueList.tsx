@@ -141,7 +141,7 @@ const IssueList: React.FC<Props> = ({
                 <Text
                   fontWeight="semibold"
                   color={useColorModeValue("gray.800", "gray.100")}
-                  noOfLines={1}
+                  noOfLines={{ base: 3, md: 2 }}
                 >
                   {title}
                 </Text>

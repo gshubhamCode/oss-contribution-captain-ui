@@ -106,23 +106,21 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
 
         {/* Middle: Title, issue link, labels */}
         <Box flex="1" minWidth={0}>
-  <Tooltip
-    label={issueDTO.title}
-    hasArrow
-    placement="top-start"
-    openDelay={300}
-  >
-    <Heading
-      as="h2"
-      size="lg"
-      isTruncated
-      cursor="pointer"
-      mb={2}
-      maxWidth="100%"
-    >
-      {issueDTO.title}
-    </Heading>
-  </Tooltip>
+          <Tooltip label={issueDTO.title} hasArrow placement="top-start" openDelay={300}>
+            <Heading
+              as="h2"
+              size="lg"
+              cursor="pointer"
+              mb={2}
+              maxWidth="100%"
+              whiteSpace={{ base: "normal", md: "nowrap" }}  // normal wrap on mobile, no wrap on desktop
+              overflow={{ base: "visible", md: "hidden" }}    // show overflow on mobile, hide on desktop
+              textOverflow={{ base: "unset", md: "ellipsis" }} // no ellipsis on mobile, ellipsis on desktop
+            >
+              {issueDTO.title}
+            </Heading>
+          </Tooltip>
+
 
   <Text mb={1} maxWidth="100%" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
     <Text as="span" fontWeight="bold" color={textColor}>
