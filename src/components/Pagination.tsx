@@ -1,4 +1,3 @@
-// src/components/Pagination.tsx
 import React, { useState, useEffect } from 'react';
 import { Flex, Button, Input, Text } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
@@ -7,9 +6,15 @@ interface PaginationProps {
   currentPage: number | string;
   totalPages: number;
   onPageChange: (page: number) => void;
+  showButtons?: boolean; // NEW
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+  showButtons = true, // default true
+}) => {
   const [inputValue, setInputValue] = useState<number | string>(currentPage);
 
   useEffect(() => {
@@ -25,7 +30,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    // Allow only digits or empty string
     if (/^\d*$/.test(val)) {
       setInputValue(val);
     }
@@ -39,23 +43,25 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      e.currentTarget.blur(); // triggers blur event and onPageChange
+      e.currentTarget.blur();
     }
   };
 
   return (
-    <Flex alignItems="center" gap={2} justifyContent="center" mt={4}>
-      <Button
-        onClick={() => onPageChange(parsePage(Number(currentPage) - 1))}
-        isDisabled={Number(currentPage) <= 1}
-        leftIcon={<ArrowBackIcon />}
-        colorScheme="gray"
-        variant="outline"
-      >
-        Prev
-      </Button>
+    <Flex alignItems="center" gap={2} justifyContent="center" mt={4} flexWrap="wrap">
+      {showButtons && (
+        <Button
+          onClick={() => onPageChange(parsePage(Number(currentPage) - 1))}
+          isDisabled={Number(currentPage) <= 1}
+          leftIcon={<ArrowBackIcon />}
+          colorScheme="gray"
+          variant="outline"
+        >
+          Prev
+        </Button>
+      )}
 
-      <Text>
+      <Text fontSize="sm">
         Page{' '}
         <Input
           type="text"
@@ -73,15 +79,17 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         / {totalPages}
       </Text>
 
-      <Button
-        onClick={() => onPageChange(parsePage(Number(currentPage) + 1))}
-        isDisabled={Number(currentPage) >= totalPages}
-        rightIcon={<ArrowForwardIcon />}
-        colorScheme="gray"
-        variant="outline"
-      >
-        Next
-      </Button>
+      {showButtons && (
+        <Button
+          onClick={() => onPageChange(parsePage(Number(currentPage) + 1))}
+          isDisabled={Number(currentPage) >= totalPages}
+          rightIcon={<ArrowForwardIcon />}
+          colorScheme="gray"
+          variant="outline"
+        >
+          Next
+        </Button>
+      )}
     </Flex>
   );
 };

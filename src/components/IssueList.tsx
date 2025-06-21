@@ -10,6 +10,8 @@ import {
   Badge,
   Wrap,
   WrapItem,
+  Flex,
+  Spacer
 } from "@chakra-ui/react";
 import Pagination from "./Pagination";
 
@@ -82,9 +84,21 @@ const IssueList: React.FC<Props> = ({
       boxShadow="md"
       bg={bg}
     >
-      <Heading as="h3" size="md" mb={4}>
-        GitHub Open Issues
-      </Heading>
+      <Flex align="center" mb={4} flexWrap="wrap">
+        <Heading as="h3" size="md">
+          GitHub Open Issues
+        </Heading>
+        <Spacer />
+
+        <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        onPageChange={onPageChange} 
+        showButtons={false}
+        />
+
+      </Flex>
+
       <Divider mb={4} />
 
       <Stack spacing={0}>

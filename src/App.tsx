@@ -7,13 +7,8 @@ import {
   IconButton,
   Button,
   Text,
-  useColorMode,
 } from "@chakra-ui/react";
-import {
-  ArrowBackIcon,
-  ArrowForwardIcon,
-  ArrowUpIcon,
-} from "@chakra-ui/icons";
+import {ArrowUpIcon} from "@chakra-ui/icons";
 import DisclaimerModal from "./components/DisclaimerModal";
 import SetColorModeBasedOnTime from "./components/SetColorModeBasedOnTime";
 import { NotificationBanner } from "./types/NotificationBanner";
@@ -37,7 +32,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [availableLabels, setAvailableLabels] = useState<string[]>([]);
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-  const pageSize = 15;
+  const pageSize = 10;
   const [notificationMessages, setNotificationMessages] = useState<string[]>([]);
 
   useEffect(() => {
