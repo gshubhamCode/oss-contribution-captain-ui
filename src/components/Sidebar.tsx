@@ -1,6 +1,76 @@
 import React from "react";
 import { Box, Heading, useColorModeValue } from "@chakra-ui/react";
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
+
+const customStyles = (colorMode: "light" | "dark") => ({
+  control: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: colorMode === "light" ? "white" : "#2D3748",
+    borderColor: state.isFocused
+      ? colorMode === "light"
+        ? "#3182ce"
+        : "#63b3ed"
+      : colorMode === "light"
+      ? "#CBD5E0"
+      : "#4A5568",
+    boxShadow: state.isFocused
+      ? colorMode === "light"
+        ? "0 0 0 1px #3182ce"
+        : "0 0 0 1px #63b3ed"
+      : "none",
+    minHeight: "36px",
+    fontSize: "0.875rem",
+    width: "260px",
+    color: colorMode === "light" ? "black" : "white",
+  }),
+  menu: (base: any) => ({
+    ...base,
+    backgroundColor: colorMode === "light" ? "white" : "#2D3748",
+    color: colorMode === "light" ? "black" : "white",
+    zIndex: 9999,
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isFocused
+      ? colorMode === "light"
+        ? "#3182ce"
+        : "#63b3ed"
+      : colorMode === "light"
+      ? "white"
+      : "#2D3748",
+    color: state.isFocused
+      ? "white"
+      : colorMode === "light"
+      ? "black"
+      : "white",
+    cursor: "pointer",
+  }),
+  input: (base: any) => ({
+    ...base,
+    color: colorMode === "light" ? "black" : "white",
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    backgroundColor: colorMode === "light" ? "#E2E8F0" : "#4A5568",
+  }),
+  multiValueLabel: (base: any) => ({
+    ...base,
+    color: colorMode === "light" ? "black" : "white",
+  }),
+  singleValue: (base: any) => ({
+    ...base,
+    color: colorMode === "light" ? "black" : "white",
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    color: colorMode === "light" ? "#A0AEC0" : "#CBD5E0",
+  }),
+});
+
+type OptionType = {
+  value: string;
+  label: string;
+};
 
 type Props = {
   sidebarOpen: boolean;
@@ -23,83 +93,15 @@ const Sidebar: React.FC<Props> = ({
 }) => {
   const colorMode = useColorModeValue("light", "dark");
 
-  // Map availableLanguages to react-select options
-  const languageOptions = availableLanguages.map((lang) => ({
+  const languageOptions: OptionType[] = availableLanguages.map((lang) => ({
     value: lang,
     label: lang,
   }));
 
-  // Map availableLabels to react-select options
-  const labelOptions = availableLabels.map((label) => ({
+  const labelOptions: OptionType[] = availableLabels.map((label) => ({
     value: label,
     label: label,
   }));
-
-  // react-select styles
-  const customStyles = {
-    control: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: colorMode === "light" ? "white" : "#2D3748",
-      borderColor: state.isFocused
-        ? colorMode === "light"
-          ? "#3182ce"
-          : "#63b3ed"
-        : colorMode === "light"
-        ? "#CBD5E0"
-        : "#4A5568",
-      boxShadow: state.isFocused
-        ? colorMode === "light"
-          ? "0 0 0 1px #3182ce"
-          : "0 0 0 1px #63b3ed"
-        : "none",
-      minHeight: "36px",
-      fontSize: "0.875rem",
-      width: "260px",
-      color: colorMode === "light" ? "black" : "white",
-    }),
-    menu: (base: any) => ({
-      ...base,
-      backgroundColor: colorMode === "light" ? "white" : "#2D3748",
-      color: colorMode === "light" ? "black" : "white",
-      zIndex: 9999,
-    }),
-    option: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: state.isFocused
-        ? colorMode === "light"
-          ? "#3182ce"
-          : "#63b3ed"
-        : colorMode === "light"
-        ? "white"
-        : "#2D3748",
-      color: state.isFocused
-        ? "white"
-        : colorMode === "light"
-        ? "black"
-        : "white",
-      cursor: "pointer",
-    }),
-    input: (base: any) => ({
-      ...base,
-      color: colorMode === "light" ? "black" : "white",
-    }),
-    multiValue: (base: any) => ({
-      ...base,
-      backgroundColor: colorMode === "light" ? "#E2E8F0" : "#4A5568",
-    }),
-    multiValueLabel: (base: any) => ({
-      ...base,
-      color: colorMode === "light" ? "black" : "white",
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      color: colorMode === "light" ? "black" : "white",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: colorMode === "light" ? "#A0AEC0" : "#CBD5E0",
-    }),
-  };
 
   return (
     <Box
@@ -116,7 +118,7 @@ const Sidebar: React.FC<Props> = ({
       {sidebarOpen && (
         <>
           <Heading as="h3" size="md" mb={4}>
-            Languages
+            Language
           </Heading>
           <Select
             options={languageOptions}
@@ -124,10 +126,12 @@ const Sidebar: React.FC<Props> = ({
             value={languageOptions.filter((opt) =>
               languageFilters.includes(opt.value)
             )}
-            onChange={(selected) =>
-              setLanguageFilters(selected.map((s) => s.value))
-            }
-            styles={customStyles}
+            onChange={(selected: MultiValue<OptionType>) => {
+              const values = selected ? selected.map((s) => s.value) : [];
+              console.log("Selected languages:", values);
+              setLanguageFilters(values);
+            }}
+            styles={customStyles(colorMode)}
             placeholder="Select languages..."
           />
 
@@ -137,13 +141,12 @@ const Sidebar: React.FC<Props> = ({
           <Select
             options={labelOptions}
             isMulti
-            value={labelOptions.filter((opt) =>
-              labelFilters.includes(opt.value)
-            )}
-            onChange={(selected) =>
-              setLabelFilters(selected.map((s) => s.value))
-            }
-            styles={customStyles}
+            value={labelOptions.filter((opt) => labelFilters.includes(opt.value))}
+            onChange={(selected: MultiValue<OptionType>) => {
+              const values = selected ? selected.map((s) => s.value) : [];
+              setLabelFilters(values);
+            }}
+            styles={customStyles(colorMode)}
             placeholder="Select labels..."
           />
         </>
