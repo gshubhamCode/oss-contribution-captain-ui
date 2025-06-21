@@ -35,7 +35,7 @@ const DisclaimerModal: React.FC = () => {
   return (
     <Modal isOpen={isOpen} onClose={handleAcknowledge} isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="2xl">
         <ModalHeader>Welcome to OSS Contribution Helper</ModalHeader>
         <ModalBody>
   <Text mb={3}>

@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Theme Controls with Tooltips */}
         <Flex gap={2}>
-          <Tooltip label="Toggle color mode (light/dark)" hasArrow>
+          <Tooltip label="Toggle theme (light/dark)" hasArrow>
             <IconButton
               aria-label="Toggle color mode"
               icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
