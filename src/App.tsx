@@ -60,15 +60,21 @@ export default function App() {
 
   const SetColorModeBasedOnTime = () => {
     const { setColorMode } = useColorMode();
-
+  
     useEffect(() => {
-      const hour = new Date().getHours();
-      const preferDark = hour >= 19 || hour < 6;
-      setColorMode(preferDark ? "dark" : "light");
+      const stored = localStorage.getItem("theme");
+      if (stored === "light" || stored === "dark") {
+        setColorMode(stored);
+      } else {
+        const hour = new Date().getHours();
+        const preferDark = hour >= 19 || hour < 6;
+        setColorMode(preferDark ? "dark" : "light");
+      }
     }, [setColorMode]);
-
+  
     return null;
   };
+  
 
   const fetchData = async () => {
     setLoading(true);
