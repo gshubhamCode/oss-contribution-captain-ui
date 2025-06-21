@@ -9,14 +9,13 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-
 import {
   ArrowBackIcon,
   ArrowForwardIcon,
   ArrowUpIcon,
 } from "@chakra-ui/icons";
 import DisclaimerModal from "./components/DisclaimerModal";
-import { NotificationBanner } from "./types/NotificationBanner"; 
+import { NotificationBanner } from "./types/NotificationBanner";
 import Sidebar from "./components/Sidebar";
 import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
@@ -25,21 +24,18 @@ import Footer from "./components/Footer";
 
 export default function App() {
   const hasFetched = useRef(false);
-
-  // Filters & state
   const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [labelFilters, setLabelFilters] = useState<string[]>([]);
+  const [sortOption, setSortOption] = React.useState("updated"); // default to recently updated
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [issues, setIssues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
   const [availableLabels, setAvailableLabels] = useState<string[]>([]);
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-
   const pageSize = 15;
   const [notificationMessages, setNotificationMessages] = useState<string[]>([]);
 
@@ -60,21 +56,15 @@ export default function App() {
 
   const SetColorModeBasedOnTime = () => {
     const { setColorMode } = useColorMode();
-  
+
     useEffect(() => {
-      const stored = localStorage.getItem("theme");
-      if (stored === "light" || stored === "dark") {
-        setColorMode(stored);
-      } else {
-        const hour = new Date().getHours();
-        const preferDark = hour >= 19 || hour < 6;
-        setColorMode(preferDark ? "dark" : "light");
-      }
+      const hour = new Date().getHours();
+      const preferDark = hour >= 19 || hour < 6;
+      setColorMode(preferDark ? "dark" : "light");
     }, [setColorMode]);
-  
+
     return null;
   };
-  
 
   const fetchData = async () => {
     setLoading(true);
@@ -86,17 +76,15 @@ export default function App() {
       const data = await response.json();
       setIssues(data.summaries);
 
-      // Extract all available labels from data
       const allLabels = Array.from(
         new Set(
           data.summaries.flatMap((issue: any) => {
             const labels = issue.issueDTO.labels;
-            return Array.isArray(labels) ? labels.map((l: string) => l.toLowerCase()) : [];
+            return Array.isArray(labels) ? labels : [];
           })
         )
       ).sort();
 
-      // Extract all available languages from data
       const allLanguages = Array.from(
         new Set(
           data.summaries.flatMap((issue: any) => {
@@ -125,16 +113,15 @@ export default function App() {
     }
   }, []);
 
-  // Filtering logic for issues, respects multi-selection filters for languages and labels
   const issueMatches = (issue: any) => {
     const issueDTO = issue.issueDTO;
     const title = issueDTO.title.toLowerCase();
     const issueId = String(issueDTO.id);
     const labels = issueDTO.labels?.map((l: string) => l.toLowerCase()) || [];
-  
+
     const languagesMap = issueDTO.repository?.languages || {};
     const languages = Object.keys(languagesMap);
-  
+
     const searchLower = searchInput.toLowerCase();
     const searchMatch =
       !searchLower ||
@@ -142,30 +129,59 @@ export default function App() {
       issueId.includes(searchLower) ||
       labels.some((l: string) => l.includes(searchLower)) ||
       languages.some((lang: string) => lang.toLowerCase().includes(searchLower));
-  
-    // ✅ Language filter match: ALL selected languages must be present
-    const langMatch = languageFilters.every((filterLang) =>
-      languages.includes(filterLang)
-    );
-  
-    // ✅ Label filter match: ALL selected labels must be present
-    const labelMatch = labelFilters.every((filterLabel) =>
-      labels.includes(filterLabel.toLowerCase())
-    );
-  
+
+    const langMatch =
+      languageFilters.length === 0 ||
+      languageFilters.every((lang) => languages.includes(lang));
+
+    const labelMatch =
+      labelFilters.length === 0 ||
+      labelFilters.every((lbl) => labels.includes(lbl.toLowerCase()));
+
     return searchMatch && langMatch && labelMatch;
   };
-  
 
+  // Filter issues first
   const filteredIssues = issues.filter(issueMatches);
-  const totalPages = Math.ceil(filteredIssues.length / pageSize);
-  const paginatedIssues = filteredIssues.slice(
+
+  // Then sort based on selected sortOption (no secondary sort)
+  const sortedIssues = filteredIssues.sort((a, b) => {
+    const aDTO = a.issueDTO;
+    const bDTO = b.issueDTO;
+
+    switch (sortOption) {
+      case "forks":
+        return (bDTO.repository?.forksCount || 0) - (aDTO.repository?.forksCount || 0);
+      case "stars":
+        return (bDTO.repository?.stargazersCount || 0) - (aDTO.repository?.stargazersCount || 0);
+      case "watchers":
+        return (bDTO.repository?.subscribersCount || 0) - (aDTO.repository?.subscribersCount || 0);
+      case "created":
+        return new Date(bDTO.createdAt).getTime() - new Date(aDTO.createdAt).getTime();
+      case "updated":
+      default:
+        return new Date(bDTO.updatedAt).getTime() - new Date(aDTO.updatedAt).getTime();
+    }
+  });
+
+  const totalPages = Math.ceil(sortedIssues.length / pageSize);
+  const paginatedIssues = sortedIssues.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
-  const scrollToTop = () =>
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  React.useEffect(() => {
+    // Reset pagination and selection when filters or sort change
+    setCurrentPage(1);
+    if (filteredIssues.length > 0) {
+      setSelectedIndex(0);
+    } else {
+      setSelectedIndex(-1); // or null if you prefer no selection when no items
+    }
+  }, [languageFilters, labelFilters, sortOption, issues]); 
+  
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const handlePageChange = (page: number) => {
     if (page < 1) page = 1;
@@ -205,12 +221,7 @@ export default function App() {
           speed="0.65s"
           color={useColorModeValue("teal.500", "teal.300")}
         />
-        <Text
-          mt={4}
-          fontSize="lg"
-          fontWeight="medium"
-          color={useColorModeValue("gray.700", "gray.300")}
-        >
+        <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
           Loading GitHub Issues...
         </Text>
       </Box>
@@ -218,32 +229,11 @@ export default function App() {
 
   if (error)
     return (
-      <Box
-        textAlign="center"
-        p={8}
-        maxW="400px"
-        mx="auto"
-        mt={20}
-        bg={useColorModeValue("red.50", "red.900")}
-        borderRadius="md"
-        boxShadow={useColorModeValue(
-          "0 0 10px rgba(220, 38, 38, 0.3)",
-          "0 0 10px rgba(245, 101, 101, 0.6)"
-        )}
-      >
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
-          color={useColorModeValue("red.600", "red.300")}
-        >
-          {error}
-        </Text>
-        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
-          Please check your network connection or try again later.
-        </Text>
-        <Button mt={6} colorScheme="red" onClick={fetchData}>
-          Retry
-        </Button>
+      <Box textAlign="center" p={8} maxW="400px" mx="auto" mt={20} bg={useColorModeValue("red.50", "red.900")} borderRadius="md"
+        boxShadow={useColorModeValue("0 0 10px rgba(220, 38, 38, 0.3)", "0 0 10px rgba(245, 101, 101, 0.6)")}>
+        <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("red.600", "red.300")}>{error}</Text>
+        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>Please check your network connection or try again later.</Text>
+        <Button mt={6} colorScheme="red" onClick={fetchData}>Retry</Button>
       </Box>
     );
 
@@ -251,13 +241,7 @@ export default function App() {
     <>
       <SetColorModeBasedOnTime />
 
-      <Box
-        minH="100vh"
-        bg={bgColor}
-        color={useColorModeValue("gray.800", "white")}
-        display="flex"
-        flexDirection="column"
-      >
+      <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")} display="flex" flexDirection="column">
         <Header
           searchInput={searchInput}
           setSearchInput={setSearchInput}
@@ -267,7 +251,6 @@ export default function App() {
 
         <DisclaimerModal />
 
-        {/* Main Layout */}
         <Box flex="1">
           <Flex pt={16} px={4} minH="calc(100vh - 64px)">
             <Sidebar
@@ -278,9 +261,10 @@ export default function App() {
               setLabelFilters={setLabelFilters}
               availableLanguages={availableLanguages}
               availableLabels={availableLabels}
+              sortOption={sortOption}
+              setSortOption={setSortOption}
             />
 
-            {/* Sidebar Toggle */}
             <IconButton
               aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
               icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
@@ -298,7 +282,6 @@ export default function App() {
               zIndex={1100}
             />
 
-            {/* Issue List */}
             <IssueList
               issues={paginatedIssues}
               currentPage={currentPage}
@@ -309,7 +292,6 @@ export default function App() {
               pageSize={pageSize}
             />
 
-            {/* Issue Details */}
             <Box
               flex="1"
               p={6}
@@ -336,7 +318,6 @@ export default function App() {
 
         <Footer />
 
-        {/* Scroll to top */}
         <IconButton
           aria-label="Back to top"
           icon={<ArrowUpIcon />}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, useColorModeValue } from "@chakra-ui/react";
+import { Box, Heading, useColorModeValue, RadioGroup, Stack, Radio, Button } from "@chakra-ui/react";
 import Select, { MultiValue } from "react-select";
 
 const customStyles = (colorMode: "light" | "dark") => ({
@@ -80,6 +80,8 @@ type Props = {
   setLabelFilters: (filters: string[]) => void;
   availableLanguages: string[];
   availableLabels: string[];
+  sortOption: string;
+  setSortOption: (option: string) => void;
 };
 
 const Sidebar: React.FC<Props> = ({
@@ -90,6 +92,8 @@ const Sidebar: React.FC<Props> = ({
   setLabelFilters,
   availableLanguages,
   availableLabels,
+  sortOption,
+  setSortOption,
 }) => {
   const colorMode = useColorModeValue("light", "dark");
 
@@ -102,6 +106,12 @@ const Sidebar: React.FC<Props> = ({
     value: label,
     label: label,
   }));
+
+  const handleResetFilters = () => {
+    setLanguageFilters([]);
+    setLabelFilters([]);
+    setSortOption("updated");
+  };
 
   return (
     <Box
@@ -128,7 +138,6 @@ const Sidebar: React.FC<Props> = ({
             )}
             onChange={(selected: MultiValue<OptionType>) => {
               const values = selected ? selected.map((s) => s.value) : [];
-              console.log("Selected languages:", values);
               setLanguageFilters(values);
             }}
             styles={customStyles(colorMode)}
@@ -149,6 +158,35 @@ const Sidebar: React.FC<Props> = ({
             styles={customStyles(colorMode)}
             placeholder="Select labels..."
           />
+
+          <Heading as="h3" size="md" mt={6} mb={4}>
+            Sort Issues By
+          </Heading>
+          <RadioGroup
+            onChange={(value) => setSortOption(value)}
+            value={sortOption}
+            color={colorMode === "light" ? "black" : "white"}
+          >
+            <Stack spacing={3}>
+              <Radio value="updated" defaultChecked>
+                Recently Updated
+              </Radio>
+              <Radio value="forks">Fork Count</Radio>
+              <Radio value="stars">Star Count</Radio>
+              <Radio value="watchers">Watchers Count</Radio>
+              <Radio value="created">Recently Created</Radio>
+            </Stack>
+          </RadioGroup>
+
+          <Button
+            mt={6}
+            size="sm"
+            variant="outline"
+            colorScheme="gray"
+            onClick={handleResetFilters}
+          >
+            Reset Filters
+          </Button>
         </>
       )}
     </Box>
@@ -156,3 +194,4 @@ const Sidebar: React.FC<Props> = ({
 };
 
 export default Sidebar;
+
