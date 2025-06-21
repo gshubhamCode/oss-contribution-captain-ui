@@ -14,6 +14,8 @@ import {
   ArrowForwardIcon,
   ArrowUpIcon,
 } from "@chakra-ui/icons";
+import DisclaimerModal from "./components/DisclaimerModal";
+import { NotificationBanner } from "./types/NotificationBanner"; 
 import Sidebar from "./components/Sidebar";
 import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
@@ -37,6 +39,24 @@ export default function App() {
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
 
   const pageSize = 15;
+
+  const [notificationMessages, setNotificationMessages] = useState<string[]>([]);
+
+useEffect(() => {
+  fetch("http://localhost:8080/banners")
+    .then((res) => res.json())
+    .then((data) => {
+      const now = Date.now();
+      const validMessages = data
+        .filter((banner: NotificationBanner) => banner.expiryTime > now)
+        .map((banner: NotificationBanner) => banner.message);
+      setNotificationMessages(validMessages);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch banners", err);
+    });
+}, []);
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -176,8 +196,10 @@ export default function App() {
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         onSearchKeyDown={handleSearchKeyDown}
+        notificationMessages={notificationMessages}
       />
 
+<DisclaimerModal />
       {/* Main Layout */}
       <Box flex="1">
         <Flex pt={16} px={4} minH="calc(100vh - 64px)">
