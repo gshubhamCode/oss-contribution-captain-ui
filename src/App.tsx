@@ -244,6 +244,7 @@ export default function App() {
           <Flex pt={16} px={4} minH="calc(100vh - 64px)">
             <Sidebar
               sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
               languageFilters={languageFilters}
               labelFilters={labelFilters}
               setLanguageFilters={setLanguageFilters}
@@ -254,24 +255,7 @@ export default function App() {
               setSortOption={setSortOption}
             />
 
-            <IconButton
-              aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-              icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              position="fixed"
-              top="120px"
-              left={sidebarOpen ? ["80vw", "300px"] : "5px"}
-              transform="translateX(-50%)"
-              size="sm"
-              borderRadius="full"
-              bg={useColorModeValue("gray.200", "gray.700")}
-              color={useColorModeValue("gray.800", "white")}
-              boxShadow="md"
-              _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
-              zIndex={1100}
-              transition="left 0.4s ease, width 0.4s ease, height 0.4s ease"
-            />
-
+          
             <IssueList
               issues={paginatedIssues}
               currentPage={currentPage}
