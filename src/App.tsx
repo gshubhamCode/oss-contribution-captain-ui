@@ -259,8 +259,8 @@ export default function App() {
               icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
               onClick={() => setSidebarOpen(!sidebarOpen)}
               position="fixed"
-              top="80px"
-              left={sidebarOpen ? ["80vw", "300px"] : "0"}
+              top="120px"
+              left={sidebarOpen ? ["80vw", "300px"] : "5px"}
               transform="translateX(-50%)"
               size="sm"
               borderRadius="full"
@@ -269,6 +269,7 @@ export default function App() {
               boxShadow="md"
               _hover={{ bg: useColorModeValue("gray.300", "gray.600") }}
               zIndex={1100}
+              transition="left 0.4s ease, width 0.4s ease, height 0.4s ease"
             />
 
             <IssueList
