@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
@@ -7,8 +8,9 @@ import {
   IconButton,
   Button,
   Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
-import {ArrowUpIcon} from "@chakra-ui/icons";
+import { ArrowUpIcon } from "@chakra-ui/icons";
 import DisclaimerModal from "./components/DisclaimerModal";
 import SetColorModeBasedOnTime from "./components/SetColorModeBasedOnTime";
 import { NotificationBanner } from "./types/NotificationBanner";
@@ -17,13 +19,28 @@ import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { Global } from "@emotion/react";
+
+<Global
+  styles={`
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .chakra-ui-light body, .chakra-ui-dark body {
+      position: relative;
+      width: 100vw;
+    }
+  `}
+/>;
 
 export default function App() {
   const hasFetched = useRef(false);
   const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [labelFilters, setLabelFilters] = useState<string[]>([]);
-  const [sortOption, setSortOption] = React.useState("updated"); // default to recently updated
+  const [sortOption, setSortOption] = useState("updated");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [issues, setIssues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,8 +50,9 @@ export default function App() {
   const [availableLabels, setAvailableLabels] = useState<string[]>([]);
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const [notificationMessages, setNotificationMessages] = useState<string[]>([]);
+  const [showDetailsOnMobile, setShowDetailsOnMobile] = useState(false);
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const pageSize = 10;
-
 
   useEffect(() => {
     fetch("http://localhost:8080/banners")
@@ -56,17 +74,15 @@ export default function App() {
     setError(null);
     try {
       const response = await fetch(`http://localhost:8080/issues/summaries`);
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
 
       const allLabels = Array.from(
         new Set(
-          data.summaries.flatMap((issue: any) => {
-            const labels = issue.issueDTO.labels;
-            return Array.isArray(labels) ? labels : [];
-          })
+          data.summaries.flatMap((issue: any) =>
+            Array.isArray(issue.issueDTO.labels) ? issue.issueDTO.labels : []
+          )
         )
       ).sort();
 
@@ -126,10 +142,8 @@ export default function App() {
     return searchMatch && langMatch && labelMatch;
   };
 
-  // Filter issues first
   const filteredIssues = issues.filter(issueMatches);
 
-  // Then sort based on selected sortOption (no secondary sort)
   const sortedIssues = filteredIssues.sort((a, b) => {
     const aDTO = a.issueDTO;
     const bDTO = b.issueDTO;
@@ -155,16 +169,14 @@ export default function App() {
     currentPage * pageSize
   );
 
-  React.useEffect(() => {
-    // Reset pagination and selection when filters or sort change
+  useEffect(() => {
     setCurrentPage(1);
     if (filteredIssues.length > 0) {
       setSelectedIndex(0);
     } else {
-      setSelectedIndex(-1); // or null if you prefer no selection when no items
+      setSelectedIndex(-1);
     }
-  }, [languageFilters, labelFilters, sortOption, issues]); 
-  
+  }, [languageFilters, labelFilters, sortOption, issues]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -186,26 +198,19 @@ export default function App() {
     }
   };
 
+  const handleIssueClick = (index: number) => {
+    setSelectedIndex(index);
+    if (isMobile) {
+      setShowDetailsOnMobile(true);
+    }
+  };
+
   const bgColor = useColorModeValue("gray.50", "gray.900");
 
   if (loading)
     return (
-      <Box
-        textAlign="center"
-        p={8}
-        bg={bgColor}
-        minH="100vh"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Spinner
-          size="xl"
-          thickness="4px"
-          speed="0.65s"
-          color={useColorModeValue("teal.500", "teal.300")}
-        />
+      <Box textAlign="center" p={8} bg={bgColor} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+        <Spinner size="xl" thickness="4px" speed="0.65s" color={useColorModeValue("teal.500", "teal.300")} />
         <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
           Loading GitHub Issues...
         </Text>
@@ -214,8 +219,7 @@ export default function App() {
 
   if (error)
     return (
-      <Box textAlign="center" p={8} maxW="400px" mx="auto" mt={20} bg={useColorModeValue("red.50", "red.900")} borderRadius="md"
-        boxShadow={useColorModeValue("0 0 10px rgba(220, 38, 38, 0.3)", "0 0 10px rgba(245, 101, 101, 0.6)")}>
+      <Box textAlign="center" p={8} maxW="400px" mx="auto" mt={20} bg={useColorModeValue("red.50", "red.900")} borderRadius="md" boxShadow={useColorModeValue("0 0 10px rgba(220, 38, 38, 0.3)", "0 0 10px rgba(245, 101, 101, 0.6)")}>
         <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("red.600", "red.300")}>{error}</Text>
         <Text mt={2} color={useColorModeValue("red.700", "red.400")}>Please check your network connection or try again later.</Text>
         <Button mt={6} colorScheme="red" onClick={fetchData}>Retry</Button>
@@ -238,7 +242,11 @@ export default function App() {
         <DisclaimerModal />
 
         <Box flex="1">
-          <Flex pt={16} px={4} minH="calc(100vh - 64px)">
+          <Flex pt={{ base: "160px", md: "80px" }} 
+           px={4} minH="calc(100vh - 64px)" 
+           gap={4} 
+           flexDirection={{ base: "column", md: "row" }}
+           >
             <Sidebar
               sidebarOpen={sidebarOpen}
               setSidebarOpen={setSidebarOpen}
@@ -252,38 +260,52 @@ export default function App() {
               setSortOption={setSortOption}
             />
 
-          
-            <IssueList
-              issues={paginatedIssues}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              selectedIndex={selectedIndex}
-              setSelectedIndex={setSelectedIndex}
-              pageSize={pageSize}
-            />
-
-            <Box
-              flex="1"
-              p={6}
-              ml={[0, 4]}
-              maxWidth="100%"
-              maxH="calc(100vh - 96px)"
-              overflowY="auto"
-              bg={useColorModeValue("white", "gray.800")}
-              borderRadius="md"
-              boxShadow="md"
-            >
-              <IssueDetails
-                issue={
-                  paginatedIssues.length > 0 &&
-                  selectedIndex >= (currentPage - 1) * pageSize &&
-                  selectedIndex < currentPage * pageSize
-                    ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
-                    : null
-                }
+            {(!isMobile || !showDetailsOnMobile) && (
+              <IssueList
+                issues={paginatedIssues}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                selectedIndex={selectedIndex}
+                setSelectedIndex={handleIssueClick}
+                pageSize={pageSize}
               />
-            </Box>
+            )}
+
+            {(!isMobile || showDetailsOnMobile) && (
+              <Box
+                flex="1"
+                p={6}
+                ml={[0, 4]}
+                maxWidth="100%"
+                maxH="calc(100vh - 96px)"
+                overflowY="auto"
+                bg={useColorModeValue("white", "gray.800")}
+                borderRadius="md"
+                boxShadow="md"
+              >
+                {isMobile && (
+                  <Button
+                    size="sm"
+                    mb={4}
+                    onClick={() => setShowDetailsOnMobile(false)}
+                    colorScheme="gray"
+                  >
+                    ← Back to Issues
+                  </Button>
+                )}
+                <IssueDetails
+                  issue={
+                    paginatedIssues.length > 0 &&
+                    selectedIndex >= (currentPage - 1) * pageSize &&
+                    selectedIndex < currentPage * pageSize
+                      ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
+                      : null
+                  }
+                  onBackToList={isMobile ? () => setShowDetailsOnMobile(false) : undefined}
+                />
+              </Box>
+            )}
           </Flex>
         </Box>
 

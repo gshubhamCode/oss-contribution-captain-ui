@@ -11,12 +11,14 @@ import {
   VStack,
   Divider,
   Tooltip,
+  Button,
 } from "@chakra-ui/react";
 import { generateLabelColorMap } from "../utils/labelColorMap";
 
 
 type Props = {
   issue: any | null;
+  onBackToList?: () => void;
 };
 
 const getLabelColor = (label: string): string => {
@@ -38,7 +40,7 @@ const getLabelColor = (label: string): string => {
   }
 };
 
-const IssueDetails: React.FC<Props> = ({ issue }) => {
+const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
   const textColor = useColorModeValue("gray.700", "gray.300");
 
   if (!issue) {

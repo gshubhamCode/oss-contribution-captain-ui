@@ -205,7 +205,11 @@ const Sidebar: React.FC<Props> = ({
     <>
       {isMobile ? (
         <>
-          <Drawer isOpen={sidebarOpen} placement="left" onClose={() => setSidebarOpen(false)}>
+          <Drawer isOpen={sidebarOpen} placement="left" onClose={() => setSidebarOpen(false)}
+          preserveScrollBarGap
+            trapFocus={false} 
+            blockScrollOnMount={false} 
+            >
             <DrawerOverlay />
             <DrawerContent>
               <DrawerHeader>Filters & Sorting</DrawerHeader>
