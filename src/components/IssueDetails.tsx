@@ -11,33 +11,12 @@ import {
   VStack,
   Divider,
   Tooltip,
-  Button,
 } from "@chakra-ui/react";
 import { generateLabelColorMap } from "../utils/labelColorMap";
-
 
 type Props = {
   issue: any | null;
   onBackToList?: () => void;
-};
-
-const getLabelColor = (label: string): string => {
-  switch (label.toLowerCase()) {
-    case "bug":
-      return "red";
-    case "feature":
-      return "green";
-    case "good first issue":
-      return "purple";
-    case "react":
-      return "cyan";
-    case "angular":
-      return "orange";
-    case "springboot":
-      return "teal";
-    default:
-      return "gray";
-  }
 };
 
 const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
@@ -50,16 +29,14 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
       </Text>
     );
   }
+
   const { issueDTO, summary, updatedAt } = issue;
+  const allLabels: string[] = (issueDTO.labels || []).map((l: string) => l.toLowerCase());
+  const labelColorMap = generateLabelColorMap(allLabels);
 
-   // Generate color map for labels dynamically
-   const allLabels: string[] = (issueDTO.labels || []).map((l: string) => l.toLowerCase());
-   const labelColorMap = generateLabelColorMap(allLabels);
- 
-   const getLabelColor = (label: string): string => {
-     return labelColorMap[label.toLowerCase()] || "gray.500";
-   };
-
+  const getLabelColor = (label: string): string => {
+    return labelColorMap[label.toLowerCase()] || "gray.500";
+  };
 
   return (
     <>
@@ -96,15 +73,13 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
               fontSize="md"
               fontWeight="semibold"
               color={useColorModeValue("gray.700", "gray.200")}
-              textDecoration="none"
-              _hover={{ textDecoration: "none" }}
             >
               {issueDTO.user}
             </Text>
           </Link>
         </Flex>
 
-        {/* Middle: Title, issue link, labels */}
+        {/* Middle: Title, labels, issue link, last updated, repo details */}
         <Box flex="1" minWidth={0}>
           <Tooltip label={issueDTO.title} hasArrow placement="top-start" openDelay={300}>
             <Heading
@@ -113,117 +88,121 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
               cursor="pointer"
               mb={2}
               maxWidth="100%"
-              whiteSpace={{ base: "normal", md: "nowrap" }}  // normal wrap on mobile, no wrap on desktop
-              overflow={{ base: "visible", md: "hidden" }}    // show overflow on mobile, hide on desktop
-              textOverflow={{ base: "unset", md: "ellipsis" }} // no ellipsis on mobile, ellipsis on desktop
+              whiteSpace={{ base: "normal", md: "normal" }}
+              overflow={{ base: "visible", md: "visible" }}
+              textOverflow={{ base: "unset", md: "unset" }}
             >
               {issueDTO.title}
             </Heading>
           </Tooltip>
 
+          {/* Labels below title */}
+          <Flex wrap="wrap" gap={2} mb={2}>
+            {(issueDTO.labels || []).length > 0 ? (
+              issueDTO.labels.map((label: string, idx: number) => (
+                <Badge
+                  key={idx}
+                  colorScheme={getLabelColor(label).split(".")[0]}
+                  variant="solid"
+                  borderRadius="full"
+                  px={2}
+                  py={0.5}
+                  fontSize="xs"
+                >
+                  {label}
+                </Badge>
+              ))
+            ) : (
+              <Text color={useColorModeValue("gray.500", "gray.400")}>No labels</Text>
+            )}
+          </Flex>
 
-  <Text mb={1} maxWidth="100%" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-    <Text as="span" fontWeight="bold" color={textColor}>
-      Issue Link:
-    </Text>{" "}
-    <Link href={issueDTO.url} isExternal color="blue.500" isTruncated>
-      {issueDTO.repositoryName}
-    </Link>
-  </Text>
+          {/* Issue Link, Last Updated, and Repo details inline */}
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            justify="space-between"
+            align={{ base: "flex-start", md: "center" }}
+            flexWrap="wrap"
+            gap={2}
+          >
+            <Box flex="1" minWidth={0}>
+              <Text
+                mb={1}
+                maxWidth="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                <Text as="span" fontWeight="bold" color={textColor}>
+                  GitHub Issue Link:
+                </Text>{" "}
+                <Link href={issueDTO.url} isExternal color="blue.500" isTruncated>
+                  {issueDTO.repositoryName}
+                </Link>
+              </Text>
 
-  <Text fontSize="sm" 
-  color={useColorModeValue("gray.500", "gray.400")} 
-  mt={1} 
-  whiteSpace="nowrap" 
-  overflow="hidden" 
-  textOverflow="ellipsis"
-  >
-    GitHub Issue Last updated: {new Date(issueDTO.updatedAt * 1000).toLocaleString(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-        hour12: true, // ✅ 12-hour format with AM/PM
-      })}
-  </Text>
+              <Text
+                fontSize="sm"
+                color={useColorModeValue("gray.500", "gray.400")}
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textOverflow="ellipsis"
+              >
+                GitHub Issue Last updated:{" "}
+                {new Date(issueDTO.updatedAt * 1000).toLocaleString(undefined, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                  hour12: true,
+                })}
+              </Text>
+            </Box>
 
-  <Flex wrap="wrap" gap={2} mt={2}>
-    {(issueDTO.labels || []).length > 0 ? (
-      issueDTO.labels.map((label: string, idx: number) => (
-        <Badge
-              key={idx}
-              colorScheme={getLabelColor(label).split(".")[0]} // extract color family for Chakra badge
-              variant="solid"
-              borderRadius="full"
-              px={2}
-              py={0.5}
-              fontSize="xs"
+            <Box
+              textAlign={{ base: "left", md: "right" }}
+              fontSize={{ base: "sm", md: "md" }}
+              color={useColorModeValue("gray.700", "gray.300")}
             >
-          {label}
-        </Badge>
-      ))
-    ) : (
-      <Text color={useColorModeValue("gray.500", "gray.400")}>
-        No labels
-      </Text>
-    )}
-  </Flex>
-</Box>
-
-
-        {/* Right: Repository details */}
-        <Box
-          flexShrink={0}
-          textAlign="right"
-          fontSize={{ base: "md", md: "lg" }}
-          color={useColorModeValue("gray.700", "gray.300")}
-          whiteSpace="nowrap"
-          ml={{ base: 0, md: 4 }}
-          minWidth={{ base: "100%", md: "auto" }}
-          mt={{ base: 4, md: 0 }}
-        >
-          <Link
-            href={issueDTO.repositoryHtmlUrl}
-            isExternal
-            fontSize={{ base: "sm", md: "md" }}
-            _hover={{ textDecoration: "underline" }}
-          >
-            {issueDTO.repositoryName}
-          </Link>
-          <Link
-            href={issueDTO.repositoryHtmlUrl}
-            isExternal
-            fontSize={{ base: "sm", md: "md" }}
-            _hover={{ textDecoration: "none" }}
-          >
-            <Text fontSize={{ base: "sm", md: "md" }} mt={1}>
-              ⭐ {issueDTO.repository.stargazersCount} | 👀 {issueDTO.repository.subscribersCount} | 🍴{" "}
-              {issueDTO.repository.forksCount}
-            </Text>
-          </Link>
+              <Link
+                href={issueDTO.repository.htmlUrl}
+                isExternal
+                fontSize={{ base: "sm", md: "md" }}
+                _hover={{ textDecoration: "underline" }}
+              >
+                GitHub Repo: {issueDTO.repositoryName}
+              </Link>
+              <Link
+                href={issueDTO.repository.htmlUrl}
+                isExternal
+                fontSize={{ base: "sm", md: "md" }}
+                _hover={{ textDecoration: "none" }}
+              >
+                <Text fontSize={{ base: "sm", md: "md" }} mt={1}>
+                  ⭐ {issueDTO.repository.stargazersCount} | 👀 {issueDTO.repository.subscribersCount} | 🍴{" "}
+                  {issueDTO.repository.forksCount}
+                </Text>
+              </Link>
+            </Box>
+          </Flex>
         </Box>
       </Flex>
 
       <Divider my={5} />
 
       <Flex mb={4} alignItems="center" gap={2} flexWrap="wrap">
-  <Heading as="h3" size="md">
-    ✨ AI Generated Summary
-  </Heading>
-  {updatedAt && (
-    <Text
-      fontSize="sm"
-      color={useColorModeValue("gray.500", "gray.400")}
-    >
-      Last updated:&nbsp;
-      {new Date(updatedAt * 1000).toLocaleString(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-        hour12: true, // ✅ 12-hour format with AM/PM
-      })}
-    </Text>
-  )}
-</Flex>
-
-      
+        <Heading as="h3" size="md">
+          ✨ AI Generated Summary
+        </Heading>
+        {updatedAt && (
+          <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+            Last updated:&nbsp;
+            {new Date(updatedAt * 1000).toLocaleString(undefined, {
+              dateStyle: "medium",
+              timeStyle: "short",
+              hour12: true,
+            })}
+          </Text>
+        )}
+      </Flex>
 
       {summary?.validJson ? (
         <VStack align="start" spacing={4} color={textColor} mt={2}>
