@@ -56,10 +56,6 @@ export default function App() {
   const pageSize = 10;
 
   useEffect(() => {
-    document.title = "OSS Contribution Helper";
-  }, []); 
-
-  useEffect(() => {
     fetch("http://localhost:8080/banners")
       .then((res) => res.json())
       .then((data) => {
