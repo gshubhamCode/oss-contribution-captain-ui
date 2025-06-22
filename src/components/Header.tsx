@@ -9,8 +9,10 @@ import {
   Box,
   Tooltip,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, RepeatIcon, HamburgerIcon } from "@chakra-ui/icons";
+import logo from "../assets/logo.png";
 
 interface HeaderProps {
   searchInput: string;
@@ -49,6 +51,7 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+
   return (
     <>
       <Flex
@@ -74,13 +77,21 @@ const Header: React.FC<HeaderProps> = ({
           variant="ghost"
         />
       )}
+
+      {/* Logo Image */}
+    <Image
+      src={logo}
+      alt="Logo"
+      boxSize="40px"
+      objectFit="contain"
+    />
        <Heading 
             as="h4"
             size={{ base: "md", sm: "md", md: "lg" }}
             textAlign="center"
             mb={{ base: 2, md: 0 }}
         >
-          Open Source Contribution Helper
+          Open Source Contribution Captain
         </Heading>
     </Flex>
 
