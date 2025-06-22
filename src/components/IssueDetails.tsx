@@ -131,7 +131,13 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
     </Link>
   </Text>
 
-  <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")} mt={1}>
+  <Text fontSize="sm" 
+  color={useColorModeValue("gray.500", "gray.400")} 
+  mt={1} 
+  whiteSpace="nowrap" 
+  overflow="hidden" 
+  textOverflow="ellipsis"
+  >
     GitHub Issue Last updated: {new Date(issueDTO.updatedAt * 1000).toLocaleString(undefined, {
         dateStyle: "medium",
         timeStyle: "short",

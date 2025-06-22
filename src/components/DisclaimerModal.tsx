@@ -36,21 +36,24 @@ const DisclaimerModal: React.FC = () => {
     <Modal isOpen={isOpen} onClose={handleAcknowledge} isCentered>
       <ModalOverlay />
       <ModalContent maxW="2xl">
-        <ModalHeader>Welcome to OSS Contribution Helper</ModalHeader>
+        <ModalHeader>Welcome to OSS Contribution Helper 🤝</ModalHeader>
         <ModalBody>
-  <Text mb={3}>
-    GitHub issues shown here are curated for <strong>first-time contributors</strong>.
-  </Text>
-  <Text mb={2}>
-    Please communicate <strong>politely and respectfully</strong> when interacting on issues.
-  </Text>
-  <Text mb={2}>
-    Always confirm with the issue creator before starting to work on an issue.
-  </Text>
-  <Text>
-    If any requirement or technical detail is unclear, make sure to clarify it with the issue creator before proceeding. Clear understanding leads to better contributions.
-  </Text>
-</ModalBody>
+        <Text mb={3}>
+          🧑‍💻 GitHub issues shown here are curated for <strong>first-time contributors</strong>.
+        </Text>
+        <Text mb={2}>
+          💬 Please communicate <strong>politely and respectfully</strong> when interacting on issues.
+        </Text>
+        <Text mb={2}>
+          ✅ Always confirm with the issue creator before starting to work on an issue.
+        </Text>
+        <Text mb={2}>
+          ❓ If any requirement or technical detail is unclear, make sure to clarify it with the issue creator before proceeding. Clear understanding leads to better contributions.
+        </Text>
+        <Text>
+          📌 Not all repositories are listed—only those meeting our internal quality criteria are scanned for issues.
+        </Text>
+      </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" onClick={handleAcknowledge}>
             I Understand
