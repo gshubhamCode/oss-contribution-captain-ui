@@ -35,6 +35,7 @@ import { Global } from "@emotion/react";
   `}
 />;
 
+
 export default function App() {
   const hasFetched = useRef(false);
   const [searchInput, setSearchInput] = useState("");
@@ -53,6 +54,10 @@ export default function App() {
   const [showDetailsOnMobile, setShowDetailsOnMobile] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const pageSize = 10;
+
+  useEffect(() => {
+    document.title = "OSS Contribution Helper";
+  }, []); 
 
   useEffect(() => {
     fetch("http://localhost:8080/banners")
