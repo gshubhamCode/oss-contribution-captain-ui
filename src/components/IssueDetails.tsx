@@ -31,6 +31,7 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
   }
 
   const { issueDTO, summary, updatedAt } = issue;
+  const issueNumber = issueDTO.url?.split("/").pop();
   const allLabels: string[] = (issueDTO.labels || []).map((l: string) => l.toLowerCase());
   const labelColorMap = generateLabelColorMap(allLabels);
 
@@ -137,7 +138,7 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
                   GitHub Issue Link:
                 </Text>{" "}
                 <Link href={issueDTO.url} isExternal color="blue.500" isTruncated>
-                  {issueDTO.repositoryName}
+                  #{issueNumber}
                 </Link>
               </Text>
 
