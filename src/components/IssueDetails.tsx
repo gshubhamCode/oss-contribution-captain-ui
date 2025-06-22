@@ -162,6 +162,12 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
               fontSize={{ base: "sm", md: "md" }}
               color={useColorModeValue("gray.700", "gray.300")}
             >
+              <Tooltip
+              label={issueDTO.repository.description || "No description provided"}
+              hasArrow
+              placement="top"
+              openDelay={300}
+              >
               <Link
                 href={issueDTO.repository.htmlUrl}
                 isExternal
@@ -170,6 +176,7 @@ const IssueDetails: React.FC<Props> = ({ issue, onBackToList }) => {
               >
                 GitHub Repo: {issueDTO.repositoryName}
               </Link>
+              </Tooltip>
               <Link
                 href={issueDTO.repository.htmlUrl}
                 isExternal
