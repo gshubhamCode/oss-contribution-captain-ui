@@ -12,7 +12,10 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, RepeatIcon, HamburgerIcon } from "@chakra-ui/icons";
-import logo from "../assets/logo.png";
+import logoLight from "../assets/logo.png";
+import logoDark from "../assets/logo_white.png";
+
+
 
 interface HeaderProps {
   searchInput: string;
@@ -50,6 +53,9 @@ const Header: React.FC<HeaderProps> = ({
       toggleColorMode();
     }
   };
+
+const logo = useColorModeValue(logoLight, logoDark);
+
 
 
   return (
