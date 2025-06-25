@@ -132,7 +132,7 @@ const Sidebar: React.FC<Props> = ({
   const handleResetFilters = () => {
     setLanguageFilters([]);
     setLabelFilters([]);
-    setSortOption("updated");
+    setSortOption("stars");
   };
 
   const content = (
@@ -181,9 +181,9 @@ const Sidebar: React.FC<Props> = ({
         color={colorMode === "light" ? "black" : "white"}
       >
         <Stack spacing={3}>
+          <Radio value="stars">Star Count</Radio>
           <Radio value="updated">Recently Updated</Radio>
           <Radio value="forks">Fork Count</Radio>
-          <Radio value="stars">Star Count</Radio>
           <Radio value="watchers">Watchers Count</Radio>
           <Radio value="created">Recently Created</Radio>
         </Stack>

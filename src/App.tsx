@@ -41,7 +41,7 @@ export default function App() {
   const [searchInput, setSearchInput] = useState("");
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [labelFilters, setLabelFilters] = useState<string[]>([]);
-  const [sortOption, setSortOption] = useState("updated");
+  const [sortOption, setSortOption] = useState("stars");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [issues, setIssues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
