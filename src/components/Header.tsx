@@ -36,27 +36,6 @@ const Header: React.FC<HeaderProps> = ({
 
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-  useEffect(() => {
-    // Fetch visitor count from API
-    const fetchVisitorCount = async () => {
-      try {
-        const response = await fetch("/api/count");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (typeof data.count === "number") {
-          setVisitorCount(data.count);
-        }
-      } catch (error) {
-        console.error("Failed to fetch visitor count:", error);
-        setVisitorCount(null);
-      }
-    };
-
-    fetchVisitorCount();
-  }, []);
-
   const toggleColorModeWithPersistence = () => {
     const currentMode = localStorage.getItem("theme") || colorMode;
     const nextMode = currentMode === "light" ? "dark" : "light";
@@ -129,21 +108,6 @@ const Header: React.FC<HeaderProps> = ({
         </Flex>
 
         <Flex alignItems="center" gap={2}>
-          {/* Visitor count next to toggle theme button */}
-          <Box
-  fontSize="sm"
-  fontWeight="semibold"
-  color={useColorModeValue("teal.600", "teal.300")}
-  userSelect="none"
-  whiteSpace="nowrap"
-  mr={4}
-  display={{ base: "none", md: "block" }} // hide on mobile
-  title="Number of visitors"
-  letterSpacing="wide"
-  textShadow="0 0 2px rgba(0,0,0,0.1)"
->
-  Visitors: {visitorCount !== null ? visitorCount.toLocaleString() : "—"}
-</Box>
 
           <Tooltip label="Toggle theme (light/dark)" hasArrow>
             <IconButton
