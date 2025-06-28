@@ -33,11 +33,13 @@ export default function Footer() {
       >
         {/* Left: Creator image and about text+links */}
         <Flex
+          direction={{ base: "column", md: "row" }}   // <--- change direction based on screen size
           align="center"
           gap={6}
           px={10}
           flex="1"
           justify={{ base: "center", md: "flex-start" }}
+          textAlign={{ base: "center", md: "left" }} // also center text on mobile
         >
           <Box
             transition="transform 0.35s ease-in-out"
@@ -51,10 +53,11 @@ export default function Footer() {
               objectFit="contain"
               bg={useColorModeValue("white", "gray.900")}
               p={1}
+              mb={{ base: 4, md: 0 }} // add bottom margin on mobile to separate image & text
             />
           </Box>
 
-          <Box textAlign={{ base: "center", md: "left" }} maxW="600px">
+          <Box maxW="600px">
             <Text fontSize="sm" mb={1}>
               <Text as="span" fontWeight="bold">
                 Shubham Gupta
