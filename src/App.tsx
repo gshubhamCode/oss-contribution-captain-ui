@@ -9,8 +9,10 @@ import {
   Button,
   Text,
   useBreakpointValue,
+  Link,
 } from "@chakra-ui/react";
 import { ArrowUpIcon } from "@chakra-ui/icons";
+import { Global } from "@emotion/react";
 import DisclaimerModal from "./components/DisclaimerModal";
 import SetColorModeBasedOnTime from "./components/SetColorModeBasedOnTime";
 import { NotificationBanner } from "./types/NotificationBanner";
@@ -19,22 +21,6 @@ import IssueList from "./components/IssueList";
 import IssueDetails from "./components/IssueDetails";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { Global } from "@emotion/react";
-
-<Global
-  styles={`
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-    .chakra-ui-light body, .chakra-ui-dark body {
-      position: relative;
-      width: 100vw;
-    }
-  `}
-/>;
-
 
 export default function App() {
   const hasFetched = useRef(false);
@@ -74,7 +60,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:8080/issues/summaries`);
+      const response = await fetch(`http://localhost:8080/api/summaries`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
@@ -208,30 +194,31 @@ export default function App() {
 
   const bgColor = useColorModeValue("gray.50", "gray.900");
 
-  if (loading)
-    return (
-      <Box textAlign="center" p={8} bg={bgColor} minH="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-        <Spinner size="xl" thickness="4px" speed="0.65s" color={useColorModeValue("teal.500", "teal.300")} />
-        <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
-          Loading GitHub Issues...
-        </Text>
-      </Box>
-    );
-
-  if (error)
-    return (
-      <Box textAlign="center" p={8} maxW="400px" mx="auto" mt={20} bg={useColorModeValue("red.50", "red.900")} borderRadius="md" boxShadow={useColorModeValue("0 0 10px rgba(220, 38, 38, 0.3)", "0 0 10px rgba(245, 101, 101, 0.6)")}>
-        <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("red.600", "red.300")}>{error}</Text>
-        <Text mt={2} color={useColorModeValue("red.700", "red.400")}>Please check your network connection or try again later.</Text>
-        <Button mt={6} colorScheme="red" onClick={fetchData}>Retry</Button>
-      </Box>
-    );
-
   return (
     <>
+      <Global
+        styles={`
+          body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+          }
+          .chakra-ui-light body, .chakra-ui-dark body {
+            position: relative;
+            width: 100vw;
+          }
+        `}
+      />
+
       <SetColorModeBasedOnTime />
 
-      <Box minH="100vh" bg={bgColor} color={useColorModeValue("gray.800", "white")} display="flex" flexDirection="column">
+      <Box
+        minH="100vh"
+        bg={bgColor}
+        color={useColorModeValue("gray.800", "white")}
+        display="flex"
+        flexDirection="column"
+      >
         <Header
           searchInput={searchInput}
           setSearchInput={setSearchInput}
@@ -243,71 +230,133 @@ export default function App() {
         <DisclaimerModal />
 
         <Box flex="1">
-          <Flex pt={{ base: "160px", md: "80px" }} 
-           px={4} minH="calc(100vh - 64px)" 
-           gap={4} 
-           flexDirection={{ base: "column", md: "row" }}
-           >
-            <Sidebar
-              sidebarOpen={sidebarOpen}
-              setSidebarOpen={setSidebarOpen}
-              languageFilters={languageFilters}
-              labelFilters={labelFilters}
-              setLanguageFilters={setLanguageFilters}
-              setLabelFilters={setLabelFilters}
-              availableLanguages={availableLanguages}
-              availableLabels={availableLabels}
-              sortOption={sortOption}
-              setSortOption={setSortOption}
-            />
-
-            {(!isMobile || !showDetailsOnMobile) && (
-              <IssueList
-                issues={paginatedIssues}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                selectedIndex={selectedIndex}
-                setSelectedIndex={handleIssueClick}
-                pageSize={pageSize}
+          {loading ? (
+            <Box
+              textAlign="center"
+              p={8}
+              minH="100vh"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Spinner
+                size="xl"
+                thickness="4px"
+                speed="0.65s"
+                color={useColorModeValue("teal.500", "teal.300")}
               />
-            )}
-
-            {(!isMobile || showDetailsOnMobile) && (
-              <Box
-                flex="1"
-                p={6}
-                ml={[0, 4]}
-                maxWidth="100%"
-                maxH="calc(100vh - 96px)"
-                overflowY="auto"
-                bg={useColorModeValue("white", "gray.800")}
-                borderRadius="md"
-                boxShadow="md"
+              <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+                Loading GitHub Issues...
+              </Text>
+            </Box>
+          ) : error ? (
+            <>
+              <Flex
+                minH="100vh"
+                align="center"
+                justify="center"
+                px={4}
+                bg={bgColor}
               >
-                {isMobile && (
-                  <Button
-                    size="sm"
-                    mb={4}
-                    onClick={() => setShowDetailsOnMobile(false)}
-                    colorScheme="gray"
-                  >
-                    ← Back to Issues
+                <Box
+                  textAlign="center"
+                  p={8}
+                  maxW="400px"
+                  w="full"
+                  bg={useColorModeValue("red.50", "red.900")}
+                  borderRadius="md"
+                  boxShadow={useColorModeValue(
+                    "0 0 10px rgba(220, 38, 38, 0.3)",
+                    "0 0 10px rgba(245, 101, 101, 0.6)"
+                  )}
+                >
+                  <Text fontSize="xl" fontWeight="bold" color={useColorModeValue("red.600", "red.300")}>
+                    {error}
+                  </Text>
+                  <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
+                    Please check your network connection or try again later.
+                  </Text>
+                  <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
+                    If issue persists, contact{" "}
+                    <Link href="mailto:oscc.feedback@gmail.com" color="teal.300">oscc.feedback@gmail.com</Link> or{" "}
+                    <Link href="https://github.com/gshubhamCode" isExternal color="teal.300">GitHub</Link>.
+                  </Text>
+                  <Button mt={6} colorScheme="red" onClick={fetchData}>
+                    Retry
                   </Button>
-                )}
-                <IssueDetails
-                  issue={
-                    paginatedIssues.length > 0 &&
-                    selectedIndex >= (currentPage - 1) * pageSize &&
-                    selectedIndex < currentPage * pageSize
-                      ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
-                      : null
-                  }
-                  onBackToList={isMobile ? () => setShowDetailsOnMobile(false) : undefined}
+                </Box>
+              </Flex>
+            </>
+          ) : (
+            <Flex
+              pt={{ base: "160px", md: "80px" }}
+              px={4}
+              minH="calc(100vh - 64px)"
+              gap={4}
+              flexDirection={{ base: "column", md: "row" }}
+            >
+              <Sidebar
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                languageFilters={languageFilters}
+                labelFilters={labelFilters}
+                setLanguageFilters={setLanguageFilters}
+                setLabelFilters={setLabelFilters}
+                availableLanguages={availableLanguages}
+                availableLabels={availableLabels}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
+              />
+
+              {(!isMobile || !showDetailsOnMobile) && (
+                <IssueList
+                  issues={paginatedIssues}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  selectedIndex={selectedIndex}
+                  setSelectedIndex={handleIssueClick}
+                  pageSize={pageSize}
                 />
-              </Box>
-            )}
-          </Flex>
+              )}
+
+              {(!isMobile || showDetailsOnMobile) && (
+                <Box
+                  flex="1"
+                  p={6}
+                  ml={[0, 4]}
+                  maxWidth="100%"
+                  maxH="calc(100vh - 96px)"
+                  overflowY="auto"
+                  bg={useColorModeValue("white", "gray.800")}
+                  borderRadius="md"
+                  boxShadow="md"
+                >
+                  {isMobile && (
+                    <Button
+                      size="sm"
+                      mb={4}
+                      onClick={() => setShowDetailsOnMobile(false)}
+                      colorScheme="gray"
+                    >
+                      ← Back to Issues
+                    </Button>
+                  )}
+                  <IssueDetails
+                    issue={
+                      paginatedIssues.length > 0 &&
+                      selectedIndex >= (currentPage - 1) * pageSize &&
+                      selectedIndex < currentPage * pageSize
+                        ? paginatedIssues[selectedIndex - (currentPage - 1) * pageSize]
+                        : null
+                    }
+                    onBackToList={isMobile ? () => setShowDetailsOnMobile(false) : undefined}
+                  />
+                </Box>
+              )}
+            </Flex>
+          )}
         </Box>
 
         <Footer />
