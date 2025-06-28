@@ -81,11 +81,11 @@ export default function Footer() {
         >
           <Text fontSize="sm">© {new Date().getFullYear()} OSCC</Text>
           <Link
-            href="mailto:oscc-contact@gmail.com"
+            href="mailto:info@opencontributioncaptain.com "
             fontSize="sm"
             color="teal.500"
           >
-            oscc-contact@gmail.com
+            info@opencontributioncaptain.com  
           </Link>
         </Box>
       </Flex>
