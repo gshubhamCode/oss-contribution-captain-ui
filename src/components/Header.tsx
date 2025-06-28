@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Flex,
   Heading,
@@ -15,8 +15,6 @@ import { MoonIcon, SunIcon, RepeatIcon, HamburgerIcon } from "@chakra-ui/icons";
 import logoLight from "../assets/logo.png";
 import logoDark from "../assets/logo_white.png";
 
-
-
 interface HeaderProps {
   searchInput: string;
   setSearchInput: (value: string) => void;
@@ -30,13 +28,34 @@ const Header: React.FC<HeaderProps> = ({
   setSearchInput,
   onSearchKeyDown,
   notificationMessages,
-  setSidebarOpen, 
+  setSidebarOpen,
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [isBannerVisible, setIsBannerVisible] = useState(true);
+  const [isBannerVisible, setIsBannerVisible] = React.useState(true);
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
 
+  useEffect(() => {
+    // Fetch visitor count from API
+    const fetchVisitorCount = async () => {
+      try {
+        const response = await fetch("/api/count");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (typeof data.count === "number") {
+          setVisitorCount(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch visitor count:", error);
+        setVisitorCount(null);
+      }
+    };
+
+    fetchVisitorCount();
+  }, []);
 
   const toggleColorModeWithPersistence = () => {
     const currentMode = localStorage.getItem("theme") || colorMode;
@@ -54,9 +73,7 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
-const logo = useColorModeValue(logoLight, logoDark);
-
-
+  const logo = useColorModeValue(logoLight, logoDark);
 
   return (
     <>
@@ -70,37 +87,31 @@ const logo = useColorModeValue(logoLight, logoDark);
         zIndex={50}
         justifyContent="space-between"
         alignItems="center"
-        flexDirection={{ base: "column", md: "row" }} 
-        gap={{ base: 2, md: 0 }} 
+        flexDirection={{ base: "column", md: "row" }}
+        gap={{ base: 2, md: 0 }}
       >
-        <Flex alignItems="center" gap={3} >
-      {isMobile && (
-        <IconButton
-          icon={<HamburgerIcon boxSize={8}/>}
-          aria-label="Open sidebar"
-          size="lg"
-          onClick={() => setSidebarOpen(true)}
-          variant="ghost"
-        />
-      )}
+        <Flex alignItems="center" gap={3}>
+          {isMobile && (
+            <IconButton
+              icon={<HamburgerIcon boxSize={8} />}
+              aria-label="Open sidebar"
+              size="lg"
+              onClick={() => setSidebarOpen(true)}
+              variant="ghost"
+            />
+          )}
 
-      {/* Logo Image */}
-    <Image
-      src={logo}
-      alt="Logo"
-      boxSize="40px"
-      objectFit="contain"
-    />
-       <Heading 
+          {/* Logo Image */}
+          <Image src={logo} alt="Logo" boxSize="40px" objectFit="contain" />
+          <Heading
             as="h4"
             size={{ base: "md", sm: "md", md: "lg" }}
             textAlign="center"
             mb={{ base: 2, md: 0 }}
-        >
-          Open Source Contribution Captain
-        </Heading>
-    </Flex>
-
+          >
+            Open Source Contribution Captain
+          </Heading>
+        </Flex>
 
         <Flex flex={1} justifyContent="center" mx={4}>
           <Input
@@ -117,7 +128,23 @@ const logo = useColorModeValue(logoLight, logoDark);
           />
         </Flex>
 
-        <Flex gap={2}>
+        <Flex alignItems="center" gap={2}>
+          {/* Visitor count next to toggle theme button */}
+          <Box
+  fontSize="sm"
+  fontWeight="semibold"
+  color={useColorModeValue("teal.600", "teal.300")}
+  userSelect="none"
+  whiteSpace="nowrap"
+  mr={4}
+  display={{ base: "none", md: "block" }} // hide on mobile
+  title="Number of visitors"
+  letterSpacing="wide"
+  textShadow="0 0 2px rgba(0,0,0,0.1)"
+>
+  Visitors: {visitorCount !== null ? visitorCount.toLocaleString() : "—"}
+</Box>
+
           <Tooltip label="Toggle theme (light/dark)" hasArrow>
             <IconButton
               aria-label="Toggle color mode"
@@ -153,7 +180,7 @@ const logo = useColorModeValue(logoLight, logoDark);
               borderBottom="1px solid"
               borderColor="yellow.300"
             >
-              ⚠️ { msg}
+              ⚠️ {msg}
             </Box>
           ))}
         </Box>

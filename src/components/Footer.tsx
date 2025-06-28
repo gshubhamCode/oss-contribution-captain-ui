@@ -35,6 +35,7 @@ export default function Footer() {
         <Flex
           align="center"
           gap={4}
+          px={10}
           flex="1"
           justify={{ base: "center", md: "flex-start" }}
         >
