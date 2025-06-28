@@ -50,8 +50,7 @@ export default function Footer() {
           />
           <Box textAlign={{ base: "center", md: "left" }} maxW="600px">
             <Text fontSize="sm" mb={1}>
-              Created by Shubham Gupta — passionate about simplifying open source
-              onboarding for everyone.
+            Shubham Gupta here — full-stack dev by day, weightlifter by… well, also day (gotta get my sleep). I build smooth, scalable systems and have a borderline obsession with anime. When not coding or lifting, I’m all about family time and good vibes. My motto? Making others smile is the ultimate cheat code to happiness.
             </Text>
             <Flex justify={{ base: "center", md: "flex-start" }} gap={4}>
               <Link

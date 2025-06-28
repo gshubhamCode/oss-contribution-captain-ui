@@ -279,7 +279,7 @@ export default function App() {
                   </Text>
                   <Text mt={2} color={useColorModeValue("red.700", "red.400")}>
                     If issue persists, contact{" "}
-                    <Link href="mailto:oscc.feedback@gmail.com" color="teal.300">oscc.feedback@gmail.com</Link> or{" "}
+                    <Link href="mailto:info@opencontributioncaptain.com" color="teal.300">info@opencontributioncaptain.com</Link> or{" "}
                     <Link href="https://github.com/gshubhamCode" isExternal color="teal.300">GitHub</Link>.
                   </Text>
                   <Button mt={6} colorScheme="red" onClick={fetchData}>
