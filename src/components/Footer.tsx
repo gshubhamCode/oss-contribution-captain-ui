@@ -10,19 +10,81 @@ import {
 } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import Creator from "../assets/creator.png";
+import Particles from "react-tsparticles";
+import { loadFull } from "tsparticles";
 
 export default function Footer() {
   const isMobile = useBreakpointValue({ base: true, md: false });
 
+  const particlesInit = async (main: any) => {
+    await loadFull(main);
+  };
+
   return (
     <Box
       as="footer"
+      position="relative"
+      overflow="hidden"
       py={6}
       px={4}
       borderTop="1px solid"
       borderColor={useColorModeValue("gray.200", "gray.700")}
       bg={useColorModeValue("gray.100", "gray.800")}
     >
+      {/* Particle Background */}
+      <Particles
+  id="tsparticles-footer"
+  init={particlesInit}
+  options={{
+    fullScreen: { enable: false },
+    background: { color: { value: "transparent" } },
+    particles: {
+      number: { value: 20 },
+      size: { value: 2 },
+      color: { value: "#a0aec0" }, 
+      links: {
+        enable: true,
+        color: "#a0aec0",
+        distance: 120,
+        opacity: 0.1,
+        width: 1,
+      },
+      move: {
+        enable: true,
+        speed: 0.6,
+        outModes: "bounce",
+      },
+    },
+    interactivity: {
+      events: {
+        onHover: {
+          enable: true,
+          mode: "repulse",
+        },
+        resize: true,
+      },
+      modes: {
+        repulse: {
+          distance: 140,
+          links: {
+            opacity: 0.7,
+          },
+        },
+      },
+    },
+  }}
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 0,
+    width: "100%",
+    height: "100%",
+  }}
+/>
+
+
+      {/* Content above particles */}
       <Flex
         direction={{ base: "column", md: "row" }}
         align="center"
@@ -30,16 +92,17 @@ export default function Footer() {
         gap={6}
         wrap="wrap"
         position="relative"
+        zIndex={1}
       >
         {/* Left: Creator image and about text+links */}
         <Flex
-          direction={{ base: "column", md: "row" }}   // <--- change direction based on screen size
+          direction={{ base: "column", md: "row" }}
           align="center"
           gap={6}
           px={10}
           flex="1"
           justify={{ base: "center", md: "flex-start" }}
-          textAlign={{ base: "center", md: "left" }} // also center text on mobile
+          textAlign={{ base: "center", md: "left" }}
         >
           <Box
             transition="transform 0.35s ease-in-out"
@@ -53,7 +116,7 @@ export default function Footer() {
               objectFit="contain"
               bg={useColorModeValue("white", "gray.900")}
               p={1}
-              mb={{ base: 4, md: 0 }} // add bottom margin on mobile to separate image & text
+              mb={{ base: 4, md: 0 }}
             />
           </Box>
 
