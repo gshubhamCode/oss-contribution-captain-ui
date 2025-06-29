@@ -247,7 +247,7 @@ export default function App() {
                 color={useColorModeValue("teal.500", "teal.300")}
               />
               <Text mt={4} fontSize="lg" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
-                Loading GitHub Issues...
+                Loading GitHub Issues... This may take a while, you can check back after few minutes.
               </Text>
             </Box>
           ) : error ? (

@@ -34,55 +34,55 @@ export default function Footer() {
     >
       {/* Particle Background */}
       <Particles
-  id="tsparticles-footer"
-  init={particlesInit}
-  options={{
-    fullScreen: { enable: false },
-    background: { color: { value: "transparent" } },
-    particles: {
-      number: { value: 20 },
-      size: { value: 2 },
-      color: { value: "#a0aec0" }, 
-      links: {
-        enable: true,
-        color: "#a0aec0",
-        distance: 120,
-        opacity: 0.1,
-        width: 1,
-      },
-      move: {
-        enable: true,
-        speed: 0.6,
-        outModes: "bounce",
-      },
-    },
-    interactivity: {
-      events: {
-        onHover: {
-          enable: true,
-          mode: "repulse",
-        },
-        resize: true,
-      },
-      modes: {
-        repulse: {
-          distance: 140,
-          links: {
-            opacity: 0.7,
+        id="tsparticles-footer"
+        init={particlesInit}
+        options={{
+          fullScreen: { enable: false },
+          background: { color: { value: "transparent" } },
+          particles: {
+            number: { value: 20 },
+            size: { value: 2 },
+            color: { value: "#a0aec0" }, 
+            links: {
+              enable: true,
+              color: "#a0aec0",
+              distance: 120,
+              opacity: 0.1,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 0.6,
+              outModes: "bounce",
+            },
           },
-        },
-      },
-    },
-  }}
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    zIndex: 0,
-    width: "100%",
-    height: "100%",
-  }}
-/>
+          interactivity: {
+            events: {
+              onHover: {
+                enable: true,
+                mode: "repulse",
+              },
+              resize: true,
+            },
+            modes: {
+              repulse: {
+                distance: 140,
+                links: {
+                  opacity: 0.7,
+                },
+              },
+            },
+          },
+          }}
+          style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 0,
+          width: "100%",
+          height: "100%",
+          }}
+        />
 
 
       {/* Content above particles */}
