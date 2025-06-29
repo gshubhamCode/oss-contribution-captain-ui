@@ -41,8 +41,11 @@ export default function App() {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const pageSize = 10;
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+
+
   useEffect(() => {
-    fetch("http://localhost:8080/banners")
+    fetch(`${backendUrl}/banners`)
       .then((res) => res.json())
       .then((data) => {
         const now = Date.now();
@@ -60,7 +63,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:8080/api/summaries`);
+      const response = await fetch(`${backendUrl}/summaries`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
