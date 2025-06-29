@@ -81,12 +81,17 @@ const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Logo Image */}
-          <Image src={logo} alt="Logo" boxSize="40px" objectFit="contain" />
+          <Image src={logo} alt="Logo" boxSize="40px" objectFit="contain" 
+          cursor="pointer"
+          onClick={() => window.location.reload()}
+          />
           <Heading
             as="h4"
             size={{ base: "md", sm: "md", md: "lg" }}
             textAlign="center"
             mb={{ base: 2, md: 0 }}
+            cursor="pointer"
+            onClick={() => window.location.reload()}
           >
             Open Source Contribution Captain
           </Heading>
