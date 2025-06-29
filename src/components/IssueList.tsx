@@ -83,6 +83,8 @@ const IssueList: React.FC<Props> = ({
       borderRadius="md"
       boxShadow="md"
       bg={bg}
+      mt={{ base: "10px", md: "0" }}   
+
     >
       <Flex align="center" mb={4} flexWrap="wrap">
         <Heading as="h3" size="md">

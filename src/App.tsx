@@ -335,6 +335,7 @@ export default function App() {
                   bg={useColorModeValue("white", "gray.800")}
                   borderRadius="md"
                   boxShadow="md"
+                  mt={{ base: "10px", md: "0" }} 
                 >
                   {isMobile && (
                     <Button
