@@ -370,6 +370,7 @@ export default function App() {
           colorScheme="gray"
           onClick={scrollToTop}
           _hover={{ bg: "gray.600" }}
+          zIndex={10}
         />
       </Box>
     </>

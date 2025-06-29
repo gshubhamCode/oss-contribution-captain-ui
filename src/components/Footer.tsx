@@ -30,6 +30,7 @@ export default function Footer() {
       borderTop="1px solid"
       borderColor={useColorModeValue("gray.200", "gray.700")}
       bg={useColorModeValue("gray.100", "gray.800")}
+      zIndex={1}
     >
       {/* Particle Background */}
       <Particles
