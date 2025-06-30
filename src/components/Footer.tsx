@@ -10,7 +10,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import Creator from "../assets/creator.png";
+import Creator from "../assets/creator.avif";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 
