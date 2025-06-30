@@ -137,7 +137,10 @@ const Header: React.FC<HeaderProps> = ({
       </Flex>
 
       {notificationMessages && isBannerVisible && notificationMessages.length > 0 && (
-        <Box w="100%" mt="4" position="relative" top="60px" zIndex={40}>
+        <Box w="100%" mt="4" 
+        position="relative" 
+        top={{ base: "145px", md: "55px" }} 
+        zIndex={40}>
           {notificationMessages.map((msg, index) => (
             <Box
               key={index}
