@@ -7,6 +7,7 @@ import {
   Text,
   useColorModeValue,
   useBreakpointValue,
+  Badge,
 } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import Creator from "../assets/creator.png";
@@ -127,9 +128,9 @@ export default function Footer() {
               Creator
             </Text> 
              <Text as="span" fontWeight="bold">
-                Shubham Gupta
+                Shubham Gupta,
               </Text>{" "}
-              here — full-stack dev by day, weightlifter by… well, also day
+              Hi I am a full-stack dev by day, weightlifter by… well, also day
               (gotta get my sleep). I build smooth, scalable systems and have a
               borderline obsession with anime. When not coding or lifting, I’m
               all about family time and good vibes. My motto? Making others
