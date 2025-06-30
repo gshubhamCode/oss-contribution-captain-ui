@@ -123,7 +123,10 @@ export default function Footer() {
 
           <Box maxW="600px">
             <Text fontSize="sm" mb={1}>
-              <Text as="span" fontWeight="bold">
+            <Text as="span" fontStyle="italic" fontSize="xs" color="gray.500" mr={1}>
+              Creator
+            </Text> 
+             <Text as="span" fontWeight="bold">
                 Shubham Gupta
               </Text>{" "}
               here — full-stack dev by day, weightlifter by… well, also day
