@@ -236,7 +236,7 @@ const Sidebar: React.FC<Props> = ({
         icon={sidebarOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
         onClick={() => setSidebarOpen(!sidebarOpen)}
         position="fixed"
-        top="120px"
+        top="80px"
         left={sidebarOpen ? ["80vw", "300px"] : "5px"}
         transform="translateX(-50%)"
         size="sm"
