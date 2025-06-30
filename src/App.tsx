@@ -63,7 +63,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${backendUrl}/summaries`);
+      const response = await fetch("https://gshubhamcode.github.io/summary-cdn/summaries.json");
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setIssues(data.summaries);
