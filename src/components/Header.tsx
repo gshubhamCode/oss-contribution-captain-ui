@@ -87,8 +87,8 @@ const Header: React.FC<HeaderProps> = ({
           />
           <Heading
             as="h4"
-            size={{ base: "md", sm: "md", md: "lg" }}
             textAlign="center"
+            fontSize={{ base: "lg", md: "2xl" }}
             mb={{ base: 2, md: 0 }}
             cursor="pointer"
             onClick={() => window.location.reload()}
