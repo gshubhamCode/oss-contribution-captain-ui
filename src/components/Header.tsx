@@ -12,8 +12,8 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, RepeatIcon, HamburgerIcon } from "@chakra-ui/icons";
-import logoLight from "../assets/logo.png";
-import logoDark from "../assets/logo_white.png";
+import logoLight from "../assets/logo.avif";
+import logoDark from "../assets/logo.avif";
 
 interface HeaderProps {
   searchInput: string;
