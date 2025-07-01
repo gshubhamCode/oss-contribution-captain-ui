@@ -73,4 +73,4 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 ### Connect
 
-Follow the project progress and discussions on LinkedIn.
+Follow the project progress and discussions on [LinkedIn]([www.linkedin.com/in/shubhamgupta-india](https://www.linkedin.com/posts/shubhamgupta-india_oss-contribution-captain-activity-7345465238315536384-lfTI?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAABn2rgQBlKq8AlIvK4ykkw-1wqiamI1xKK8)).
