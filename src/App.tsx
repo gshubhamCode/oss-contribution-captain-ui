@@ -45,7 +45,7 @@ export default function App() {
 
 
   useEffect(() => {
-    fetch(`${backendUrl}/banners`)
+    fetch("https://gshubhamcode.github.io/summary-cdn/banners.json")
       .then((res) => res.json())
       .then((data) => {
         const now = Date.now();
