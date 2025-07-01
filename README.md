@@ -1,6 +1,6 @@
 # OSS Contribution Captain UI
 
-![OSS Contribution Captain Logo](./assets/logo.png)
+![OSS Contribution Captain Logo](./src/assets/logo.avif)
 
 **OSS Contribution Captain UI** is the frontend React application for a unique open-source contributor helper platform designed to empower new contributors to find beginner-friendly issues, understand repositories, and start contributing faster and confidently.
 
