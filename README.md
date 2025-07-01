@@ -57,11 +57,13 @@ Open-source is growing exponentially, but many new contributors find it hard to 
 git clone https://github.com/gshubhamCode/oss-contribution-captain-ui.git
 cd oss-contribution-captain-ui
 npm install
+```
 
 ### Running the APP
 
 ```bash
 npm run dev
+```
 
 Open http://localhost:5173/  to view it in your browser.
 
